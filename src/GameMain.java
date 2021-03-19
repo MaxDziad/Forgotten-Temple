@@ -26,8 +26,7 @@ public class GameMain extends JPanel {
 	private GameCanvas canvas;
 	
 	// Constructor to initialize the UI components and game objects
-	public GameMain() {
-		// Initialize the game objects
+	public GameMain() {		// Initialize the game objects
 		gameInit();
 		
 		// UI components
