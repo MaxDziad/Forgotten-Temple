@@ -1,2 +1,5 @@
-https://zetcode.com/javagames/
 https://stackoverflow.com/*
+docs.oracle.com/javase/7/docs/api/java/awt/*
+
+https://longbaonguyen.github.io/courses/platformer/platformer.html
+https://zetcode.com/javagames/
