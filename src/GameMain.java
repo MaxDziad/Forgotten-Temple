@@ -3,14 +3,23 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class GameMain extends JPanel {
-	// Define constants for the game
+	//-------------------------- Define constants for the game-----------------------------
 	static final String TITLE = "Super Student Bros";
+	// width and height of the game screen
 	static final int CANVAS_WIDTH = 1024;
 	static final int CANVAS_HEIGHT = 800;
+	
+	static final int UPDATES_PER_SEC = 10;  // number of game update per second
+	static final long UPDATE_PERIOD_NSEC = 1000000000L / UPDATES_PER_SEC;  // nanoseconds
 	// ......
 	
-	// Define instance variables for the game objects
-	// ......
+	static enum GameState {
+		INITIALIZED, PLAYING, PAUSED, GAMEOVER, DESTROYED
+	}
+	//current state of the game
+	static GameState state;
+	
+	// ----------------------------Define instance variables for the game objects---------------------------
 	// ......
 	
 	// Handle for the custom drawing panel
@@ -19,12 +28,12 @@ public class GameMain extends JPanel {
 	// Constructor to initialize the UI components and game objects
 	public GameMain() {
 		// Initialize the game objects
-		//gameInit();
+		gameInit();
 		
 		// UI components
 		canvas = new GameCanvas();
 		canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
-		add(canvas);   // center of default BorderLayout
+		add(canvas);
 		
 		// Other UI components such as button, score board, if any.
 		// ......
@@ -33,23 +42,84 @@ public class GameMain extends JPanel {
 		
 	}
 	
-	// ------ All the game related codes here ------
+	
+	
+	// ----------------------------- All the game related codes here -----------------------------------
 	
 	// Initialize all the game objects, run only once.
-	//public void gameInit() { ...... }
+	public void gameInit() {
+		state = GameState.INITIALIZED;
+	}
 	
-	// Start and re-start the game.
-	//public void gameStart() { ...... }
+	// To start and re-start the game.
+	public void gameStart() {
+		// Create a new thread
+		Thread gameThread =  new Thread() {
+			// Override run() to provide the running behavior of this thread.
+			@Override
+			public void run() {
+				gameLoop();
+			}
+		};
+		// Start the thread. start() calls run(), which in turn calls gameLoop().
+		gameThread.start();
+	}
+	
+	// Run the game loop here.
+	private void gameLoop() {
+		// Regenerate the game objects for a new game
+		// ......
+		state = GameState.PLAYING;
+		
+		// Game loop
+		long beginTime, timeTaken, timeLeft;  // in msec
+		while (state != GameState.GAMEOVER) {
+			beginTime = System.nanoTime();
+			if (state == GameState.PLAYING) {   // not paused
+				// Update the state and position of all the game objects, detect collisions and provide responses.
+				gameUpdate();
+			}
+			// Refresh the display
+			repaint();
+			// Delay timer to provide the necessary delay to meet the target rate
+			timeTaken = System.nanoTime() - beginTime;
+			timeLeft = (UPDATE_PERIOD_NSEC - timeTaken) / 1000000L;  // in milliseconds
+			if (timeLeft < 10) timeLeft = 10;   // set a minimum
+			try {
+				// Provides the necessary delay and also yields control so that other thread can do work.
+				Thread.sleep(timeLeft);
+			} catch (InterruptedException ex) { }
+		}
+	}
 	
 	// Shutdown the game, clean up code that runs only once.
-	//public void gameShutdown() { ...... }
+	public void gameShutdown() {
+	
+	}
 	
 	// One step of the game.
-	//public void gameUpdate() { ...... }
+	public void gameUpdate() {
+	
+	}
 	
 	// Refresh the display after each step.
-	// Use (Graphics g) as argument if you are not using Java 2D.
-	//public void gameDraw(Graphics2D g2d) { ...... }
+	public void gameDraw(Graphics2D g2d) {
+		switch (state) {
+			case INITIALIZED:
+				// ......
+				break;
+			case PLAYING:
+				// ......
+				break;
+			case PAUSED:
+				// ......
+				break;
+			case GAMEOVER:
+				// ......
+				break;
+		}
+		// ......
+	}
 	
 	// Process a key-pressed event.
 	public void gameKeyPressed(int keyCode) {
@@ -106,7 +176,9 @@ public class GameMain extends JPanel {
 		public void keyTyped(KeyEvent e) { }     // not used
 	}
 	
-	// Main
+	
+	
+	// -----------------------------------Main-------------------------------------
 	public static void main(String[] args) {
 		// Use the event dispatch thread to build the UI for thread-safety.
 		SwingUtilities.invokeLater(new Runnable() {
@@ -115,8 +187,8 @@ public class GameMain extends JPanel {
 				//Creates new frame
 				JFrame frame = new JFrame(TITLE);
 				
-				//Sets size of the frame
-				frame.setSize(1024,800);
+				//frame is packed until the game starts
+				frame.pack();
 				
 				//Stops the game after exiting the window
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
