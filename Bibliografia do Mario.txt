@@ -3,3 +3,4 @@ docs.oracle.com/javase/7/docs/api/java/awt/*
 
 https://longbaonguyen.github.io/courses/platformer/platformer.html
 https://zetcode.com/javagames/
+https://www3.ntu.edu.sg/home/ehchua/programming/java/J8d_Game_Framework.html
