@@ -6,7 +6,7 @@ public class GameMain extends JPanel {
 	//-------------------------- Define constants for the game-----------------------------
 	static final String TITLE = "Super Student Bros";
 	// width and height of the game screen
-	static final int CANVAS_WIDTH = 1024;
+	static final int CANVAS_WIDTH = 1025;
 	static final int CANVAS_HEIGHT = 800;
 	
 	static final int UPDATES_PER_SEC = 10;  // number of game update per second
@@ -22,22 +22,21 @@ public class GameMain extends JPanel {
 	// ----------------------------Define instance variables for the game objects---------------------------
 	// ......
 	
-	// Handle for the custom drawing panel
-	private GameCanvas canvas;
-	
 	// Constructor to initialize the UI components and game objects
 	public GameMain() {		// Initialize the game objects
 		gameInit();
 		
 		// UI components
-		canvas = new GameCanvas();
+		// Handle for the custom drawing panel
+		GameCanvas canvas = new GameCanvas();
 		canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 		add(canvas);
 		
 		// Other UI components such as button, score board, if any.
 		// ......
 		
-		// Set up menu bar
+		//Starts the game
+		gameStart();
 		
 	}
 	
@@ -185,9 +184,6 @@ public class GameMain extends JPanel {
 			public void run() {
 				//Creates new frame
 				JFrame frame = new JFrame(TITLE);
-				
-				//frame is packed until the game starts
-				frame.pack();
 				
 				//Stops the game after exiting the window
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
