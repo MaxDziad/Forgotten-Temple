@@ -2,14 +2,17 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import Sprites.*;
+
 public class GameMain extends JPanel {
+	
 	//-------------------------- Define constants for the game-----------------------------
 	static final String TITLE = "Super Student Bros";
 	// width and height of the game screen
-	static final int CANVAS_WIDTH = 1025;
+	static final int CANVAS_WIDTH = 1024;
 	static final int CANVAS_HEIGHT = 800;
 	
-	static final int UPDATES_PER_SEC = 10;  // number of game update per second
+	static final int UPDATES_PER_SEC = 20;  // number of game update per second
 	static final long UPDATE_PERIOD_NSEC = 1000000000L / UPDATES_PER_SEC;  // nanoseconds
 	// ......
 	
@@ -19,8 +22,9 @@ public class GameMain extends JPanel {
 	//current state of the game
 	static GameState state;
 	
+	
 	// ----------------------------Define instance variables for the game objects---------------------------
-	// ......
+	static Player player;
 	
 	// Constructor to initialize the UI components and game objects
 	public GameMain() {		// Initialize the game objects
@@ -30,6 +34,7 @@ public class GameMain extends JPanel {
 		// Handle for the custom drawing panel
 		GameCanvas canvas = new GameCanvas();
 		canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
+		canvas.setMaximumSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 		add(canvas);
 		
 		// Other UI components such as button, score board, if any.
@@ -41,12 +46,12 @@ public class GameMain extends JPanel {
 	}
 	
 	
-	
 	// ----------------------------- All the game related codes here -----------------------------------
 	
 	// Initialize all the game objects, run only once.
 	public void gameInit() {
 		state = GameState.INITIALIZED;
+		player = new Player();
 	}
 	
 	// To start and re-start the game.
@@ -175,7 +180,6 @@ public class GameMain extends JPanel {
 	}
 	
 	
-	
 	// -----------------------------------Main-------------------------------------
 	public static void main(String[] args) {
 		// Use the event dispatch thread to build the UI for thread-safety.
@@ -185,13 +189,19 @@ public class GameMain extends JPanel {
 				//Creates new frame
 				JFrame frame = new JFrame(TITLE);
 				
+				//Adding game canvas as a JPanel to the frame
+				frame.setContentPane(new GameMain());
+				
 				//Stops the game after exiting the window
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				
+				//Sizes the frame to preffered size
+				frame.pack();
 				
 				//Sets frame to be centered on the screen
 				frame.setLocationRelativeTo(null);
 				
-				//Denies resizing game window
+				//Blocks the button for resizing window
 				frame.setResizable(false);
 				
 				//Shows the frame
