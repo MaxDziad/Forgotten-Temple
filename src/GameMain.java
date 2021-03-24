@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import javax.swing.*;
 
 import Sprites.*;
@@ -8,23 +9,28 @@ public class GameMain extends JPanel {
 	
 	//-------------------------- Define constants for the game-----------------------------
 	static final String TITLE = "Super Student Bros";
+	
 	// width and height of the game screen
 	static final int CANVAS_WIDTH = 1024;
 	static final int CANVAS_HEIGHT = 800;
 	
-	static final int UPDATES_PER_SEC = 20;  // number of game update per second
-	static final long UPDATE_PERIOD_NSEC = 1000000000L / UPDATES_PER_SEC;  // nanoseconds
-	// ......
-	
-	static enum GameState {
-		INITIALIZED, PLAYING, PAUSED, GAMEOVER, DESTROYED
-	}
-	//current state of the game
-	static GameState state;
+	static final int FPS = 60;  // number of game updates per second
+	static final long UPDATE_PERIOD_NSEC = 1000000000L / FPS;  // nanoseconds
 	
 	
 	// ----------------------------Define instance variables for the game objects---------------------------
+	
 	static Player player;
+	
+	static Image image;
+	
+	static enum GameState {
+		INITIALIZED, MENUSTATE, PAUSED, PLAYING, GAMEOVER, DESTROYED
+	}
+	
+	//current state of the game
+	static GameState state;
+	
 	
 	// Constructor to initialize the UI components and game objects
 	public GameMain() {		// Initialize the game objects
@@ -34,7 +40,6 @@ public class GameMain extends JPanel {
 		// Handle for the custom drawing panel
 		GameCanvas canvas = new GameCanvas();
 		canvas.setPreferredSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
-		canvas.setMaximumSize(new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT));
 		add(canvas);
 		
 		// Other UI components such as button, score board, if any.
@@ -52,6 +57,7 @@ public class GameMain extends JPanel {
 	public void gameInit() {
 		state = GameState.INITIALIZED;
 		player = new Player();
+		image = new BufferedImage(CANVAS_WIDTH,CANVAS_HEIGHT, BufferedImage.TYPE_INT_RGB);
 	}
 	
 	// To start and re-start the game.
@@ -76,22 +82,28 @@ public class GameMain extends JPanel {
 		
 		// Game loop
 		long beginTime, timeTaken, timeLeft;  // in msec
+		
 		while (state != GameState.GAMEOVER) {
+			
 			beginTime = System.nanoTime();
+			
 			if (state == GameState.PLAYING) {   // not paused
 				// Update the state and position of all the game objects, detect collisions and provide responses.
 				gameUpdate();
 			}
 			// Refresh the display
 			repaint();
+			
 			// Delay timer to provide the necessary delay to meet the target rate
 			timeTaken = System.nanoTime() - beginTime;
-			timeLeft = (UPDATE_PERIOD_NSEC - timeTaken) / 1000000L;  // in milliseconds
-			if (timeLeft < 10) timeLeft = 10;   // set a minimum
+			timeLeft = (UPDATE_PERIOD_NSEC - timeTaken) / 1000000;  // in milliseconds
 			try {
 				// Provides the necessary delay and also yields control so that other thread can do work.
 				Thread.sleep(timeLeft);
-			} catch (InterruptedException ex) { }
+			}
+			catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -108,6 +120,9 @@ public class GameMain extends JPanel {
 	// Refresh the display after each step.
 	public void gameDraw(Graphics2D g2d) {
 		switch (state) {
+			case MENUSTATE:
+				// ......
+				break;
 			case INITIALIZED:
 				// ......
 				break;
@@ -158,12 +173,12 @@ public class GameMain extends JPanel {
 		// Called back by repaint().
 		@Override
 		public void paintComponent(Graphics g) {
-			Graphics2D g2d = (Graphics2D)g;  // if using Java 2D
+			Graphics2D g2d = (Graphics2D)g;  // using Java 2D
 			super.paintComponent(g2d);       // paint background
-			setBackground(Color.BLACK);      // may use an image for background
+			setBackground(image.getGraphics().getColor());      // may use an image for background
 			
-			// Draw the game objects
-		//	gameDraw(g2d);
+		//  Draw the game objects
+			gameDraw(g2d);
 		}
 		
 		// KeyEvent handlers
