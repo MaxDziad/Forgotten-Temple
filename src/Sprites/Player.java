@@ -42,15 +42,15 @@ public class Player implements Sprite{
 	
 	
 	//For loading and changing player image during the game (SmallMario -> BigMario etc.)
-	private void loadImage(){
-		try{
-			image = ImageIO.read(getClass().getClassLoader().getResource(imagePath));
-		}
-		catch (IOException e){
-			System.out.println("Couldn't load image");
-		}
-	}
-	
+//	private void loadImage(){
+//		try{
+//			image = ImageIO.read(getClass().getClassLoader().getResource(imagePath));
+//		}
+//		catch (IOException e){
+//			System.out.println("Couldn't load image");
+//		}
+//	}
+//
 	
 	//------------------------------------Constructor------------------------------------------
 	public Player(){
@@ -58,7 +58,7 @@ public class Player implements Sprite{
 		alive = true;
 		horizontalSpeed = 5;
 		imagePath = "SmallStudent_Right.png";
-		loadImage();
+//		loadImage();
 //		width = image.getWidth();
 //		height = image.getHeight();
 	}
