@@ -1,13 +1,15 @@
 package GameState;
 
 import GameMain.GamePanel;
-import TileMap.TileMap;
+import TileMap.*;
+
 
 import java.awt.*;
 
 public class Level1 extends GameState{
 	
 	private TileMap tileMap;
+	private Background bg;
 	
 	public Level1(GameStateManager gsm){
 		this.gsm = gsm;
@@ -19,7 +21,12 @@ public class Level1 extends GameState{
 		tileMap = new TileMap(25);
 		tileMap.loadTiles("");                //load TileSet
 		tileMap.loadMap("");                  //load Map
-		tileMap.setPosition(0, 0);
+		tileMap.setPosition(0,0);
+
+		bg = new Background("",0.1);		//load Background
+
+
+
 	}
 	
 	@Override
@@ -27,6 +34,11 @@ public class Level1 extends GameState{
 	
 	@Override
 	public void draw(Graphics2D g) {
+
+		// draw background
+		bg.draw(g);
+
+
 		
 		// Clear screen
 		g.setColor(Color.WHITE);
