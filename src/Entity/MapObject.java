@@ -24,17 +24,18 @@ public abstract class MapObject {
     protected int width;
     protected int height;
 
-    // collision box
+    // collision box size
     protected int cwidth;
     protected int cheight;
 
     // collision
     protected int currRow;
     protected int currCol;
-    protected double xdest; // x destination
-    protected double ydest; // y destination
-    protected double xtemp; // temporary x
-    protected double ytemp; // temporary y
+    protected double xdest;    // x destination
+    protected double ydest;    // y destination
+    protected double xtemp;    // temporary x
+    protected double ytemp;    // temporary y
+    // 4-point detectors for collision detection (each for every corner)
     protected boolean topLeft;
     protected boolean topRight;
     protected boolean bottomLeft;
@@ -56,24 +57,27 @@ public abstract class MapObject {
     protected boolean falling;
 
     // movement attributes (some of these may be optional)
-    protected double moveSpeed;
+    protected double moveSpeed;   //acceleration
     protected double maxSpeed;
-    protected double stopSpeed;
-    protected double fallSpeed;
+    protected double stopSpeed;   //de-acceleration
+    protected double fallSpeed;   //acceleration
     protected double maxFallSpeed;
     protected double jumpStart;
-    protected double stopJumpSpeed;
+    protected double stopJumpSpeed;  //holding longer jump button = longer jump
 
     // constructor
     public MapObject(TileMap tm){
         tileMap = tm;
         tileSize = tm.getTileSize();
     }
+    
+    // checks if map object collided with another one
     public boolean intersects(MapObject o){
         Rectangle r1 = getRectangle();
         Rectangle r2 = o.getRectangle();
         return r1.intersects(r2);
     }
+    
     public Rectangle getRectangle(){
         return new Rectangle((int)x - cwidth,(int)y - cheight,cwidth,cheight);
     }
