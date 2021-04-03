@@ -42,7 +42,7 @@ public abstract class MapObject {
     protected boolean bottomRight;
 
     // animation
-    protected Animation animation;
+ //   protected Animation animation;
     protected int currentAction;
     protected int previousAction;
     protected boolean facingRight; // if it's facingRight, we don't do anything with it, if it's facingLeft, we have to

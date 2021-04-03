@@ -18,12 +18,12 @@ public class Level1 extends GameState{
 	
 	@Override
 	public void init() {
-		tileMap = new TileMap(25);
-		tileMap.loadTiles("");                //load TileSet
-		tileMap.loadMap("");                  //load Map
+		tileMap = new TileMap(32);
+		tileMap.loadTiles("/TileSets/level1.png");            //load TileSet
+		tileMap.loadMap("/Maps/Level1.map");                  //load Map
 		tileMap.setPosition(0,0);
 
-		bg = new Background("",0.1);		//load Background
+		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 
 
