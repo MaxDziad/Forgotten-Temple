@@ -35,6 +35,7 @@ public abstract class MapObject {
     protected double ydest;    // y destination
     protected double xtemp;    // temporary x
     protected double ytemp;    // temporary y
+
     // 4-point detectors for collision detection (each for every corner)
     protected boolean topLeft;
     protected boolean topRight;
@@ -42,7 +43,7 @@ public abstract class MapObject {
     protected boolean bottomRight;
 
     // animation
- //   protected Animation animation;
+    protected Animation animation;
     protected int currentAction;
     protected int previousAction;
     protected boolean facingRight; // if it's facingRight, we don't do anything with it, if it's facingLeft, we have to
@@ -65,27 +66,29 @@ public abstract class MapObject {
     protected double jumpStart;
     protected double stopJumpSpeed;  //holding longer jump button = longer jump
 
-    // constructor
+    // Constructor
     public MapObject(TileMap tm){
         tileMap = tm;
         tileSize = tm.getTileSize();
     }
     
-    // checks if map object collided with another one
+    // Checks if map object collided with another one
     public boolean intersects(MapObject o){
         Rectangle r1 = getRectangle();
         Rectangle r2 = o.getRectangle();
         return r1.intersects(r2);
     }
-    
+
     public Rectangle getRectangle(){
         return new Rectangle((int)x - cwidth,(int)y - cheight,cwidth,cheight);
     }
 
+    // Finds corners of blocking tiles
     public void calculateCorners(double x, double y){
         int leftTile = (int)(x - cwidth / 2) / tileSize;
         int rightTile = (int)(x + cwidth / 2 - 1) / tileSize;
-        int topTile = (int)(y - cheight / 2) / tileSize;
+        // *BUG - I HAD TO ADD 1 to topTile to repair an error
+        int topTile = (int)(y - cheight / 2) / tileSize + 1;
         int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
 
         int tl = tileMap.getType(topTile,leftTile);
@@ -100,8 +103,8 @@ public abstract class MapObject {
 
 
     }
-
-    public void checkTileMapCollision(){ // check whether or not we have run into a blocked tile or a normal tile
+    // Check whether or not we have run into a blocked tile or a normal tile
+    public void checkTileMapCollision(){
         currCol = (int)x / tileSize;
         currRow = (int)y / tileSize;
 
@@ -159,6 +162,14 @@ public abstract class MapObject {
 
     }
 
+    // Check whether or not the object is on the screen
+    public boolean notOnScreen(){
+        return x + xmap + width < 0 || x + xmap - width > GamePanel.WIDTH ||
+                y + ymap + height < 0 ||
+                y + ymap - height > GamePanel.HEIGHT;
+    }
+
+    // Getters
     public int getX() { return (int)x; }
     public int getY() { return (int)y; }
     public int getWidth() { return width; }
@@ -166,6 +177,7 @@ public abstract class MapObject {
     public int getCWidth() { return cwidth; }
     public int getCHeight() { return cheight; }
 
+    // Setters
     public void setPosition(double x, double y){
         this.x = x;
         this.y = y;
@@ -194,15 +206,6 @@ public abstract class MapObject {
     public void setJumping(boolean b){
         jumping = b;
     }
-
-    // check whether or not the object is on the screen
-    public boolean notOnScreen(){
-        return x + xmap + width < 0 || x + xmap - width > GamePanel.WIDTH ||
-                y + ymap + height < 0 ||
-                y + ymap - height > GamePanel.HEIGHT;
-
-    }
-
 
 
 }

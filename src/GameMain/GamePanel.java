@@ -10,24 +10,25 @@ import GameState.GameStateManager;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
-	// dimensions
-	public static final int WIDTH = 1025;
+	// Dimensions
+	public static final int WIDTH = 1024;
 	public static final int HEIGHT = 768;
 	public static final int SCALE = 1;
 	
-	// game thread
+	// Game thread
 	private Thread thread;
 	private boolean running;
 	private int FPS = 60;
 	private long targetTime = 1000 / FPS;
 	
-	// image
+	// Image and Graphics
 	private BufferedImage image;
 	private Graphics2D g;
 	
-	// game state manager
+	// Game state manager (Menu, Level1 etc)
 	private GameStateManager gsm;
-	
+
+	// Constructor
 	public GamePanel() {
 		super();
 		setPreferredSize(
@@ -35,7 +36,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		setFocusable(true);
 		requestFocus();
 	}
-	
+
+	// Makes a JFrame displayable by connecting it to a native screen resource
 	public void addNotify() {
 		super.addNotify();
 		if(thread == null) {
@@ -44,7 +46,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			thread.start();
 		}
 	}
-	
+
+	// Initialize game
 	private void init() {
 		
 		image = new BufferedImage(
@@ -58,7 +61,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		gsm = new GameStateManager();
 		
 	}
-	
+
+	// Game plays here
 	public void run() {
 		
 		init();
@@ -91,13 +95,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 		
 	}
-	
+
+	// Calculate objects
 	private void update() {
 		gsm.update();
 	}
+
+	// Draw objects
 	private void draw() {
 		gsm.draw(g);
 	}
+
+	// Draw it to screen
 	private void drawToScreen() {
 		Graphics g2 = getGraphics();
 		g2.drawImage(image, 0, 0,
@@ -105,7 +114,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			null);
 		g2.dispose();
 	}
-	
+
+	// Key listeners
 	public void keyTyped(KeyEvent key) {}
 	public void keyPressed(KeyEvent key) {
 		gsm.keyPressed(key.getKeyCode());

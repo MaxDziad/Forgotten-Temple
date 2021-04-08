@@ -2,6 +2,7 @@ package Entity;
 
 
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 
 public class Animation {
 	
@@ -59,6 +60,9 @@ public class Animation {
 	
 	public int getCurrentFrame() {
 		return currentFrame;
+	}
+	public BufferedImage getImage(){
+		return frames[currentFrame];
 	}
 	
 	public boolean isPlayedOnce() {
