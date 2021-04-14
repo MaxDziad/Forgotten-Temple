@@ -17,10 +17,6 @@ public class Player extends MapObject{
 	private boolean flinching;
 	private long flinchTime;
 	
-	// Just for testing! (Want to change fireball to whip/rope attacks)
-	private int fire;
-	private int maxFire;
-	
 	// Whip attacks
 	private boolean isAttacking;
 	private int whipDamage;
@@ -55,6 +51,7 @@ public class Player extends MapObject{
 		fallSpeed = 0.15;
 		maxFallSpeed = 4.0;
 		jumpStart = -4.8;
+		// Variable for higher jumping (hold jump button longer)
 		stopJumpSpeed = 0.3;
 
 		facingRight = true;
@@ -64,7 +61,7 @@ public class Player extends MapObject{
 		whipDamage = 8;
 		whipRange = 75;
 
-		// Sprites
+		// Sprites for animation
 		try{
 			// Load sprite
 			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player.png"));
@@ -162,8 +159,6 @@ public class Player extends MapObject{
 
 			if(dy > maxFallSpeed) dy = maxFallSpeed;
 		}
-
-
 	}
 
 	public void update(){
@@ -173,7 +168,7 @@ public class Player extends MapObject{
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
 
-		// Set animation
+		// SET ANIMATION
 		// Attacking
 		if(isAttacking){
 			if(currentAction != ATTACKING){
@@ -204,7 +199,7 @@ public class Player extends MapObject{
 			}
 		}
 
-		// Jumping
+		// Walking
 		else if(left || right){
 			if(currentAction != WALKING){
 				currentAction = WALKING;
@@ -214,7 +209,7 @@ public class Player extends MapObject{
 			}
 		}
 
-		// Jumping
+		// Idle
 		else{
 			if(currentAction != IDLE){
 				currentAction = IDLE;
@@ -238,7 +233,7 @@ public class Player extends MapObject{
 
 		setMapPosition();
 
-		// Draw player
+		// When player took damage
 		if(flinching) {
 			long elapsed = (System.nanoTime() - flinchTime) / 1000000;
 			if (elapsed / 100 % 2 == 0) return;
@@ -248,6 +243,7 @@ public class Player extends MapObject{
 		if(facingRight){
 			g.drawImage(animation.getImage(), (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
 		}
+
 		// When player is facing left
 		else{
 			g.drawImage(animation.getImage(), (int)(x + xmap - width / 2 + width),

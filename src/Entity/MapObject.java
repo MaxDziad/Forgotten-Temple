@@ -14,7 +14,7 @@ public abstract class MapObject {
     protected double xmap; // x map position
     protected double ymap; // y map position
 
-    // position and vector
+    // movement vector
     protected double x;
     protected double y;
     protected double dx;
@@ -52,7 +52,6 @@ public abstract class MapObject {
     // movement
     protected boolean left;
     protected boolean right;
-    protected boolean up;
     protected boolean down;
     protected boolean jumping;
     protected boolean falling;
@@ -87,8 +86,7 @@ public abstract class MapObject {
     public void calculateCorners(double x, double y){
         int leftTile = (int)(x - cwidth / 2) / tileSize;
         int rightTile = (int)(x + cwidth / 2 - 1) / tileSize;
-        // *BUG - I HAD TO ADD 1 to topTile to repair an error
-        int topTile = (int)(y - cheight / 2) / tileSize + 1;
+        int topTile = (int)(y - cheight / 2) / tileSize;
         int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
 
         int tl = tileMap.getType(topTile,leftTile);
@@ -100,20 +98,20 @@ public abstract class MapObject {
         topRight = tr == Tile.BLOCKED;
         bottomLeft = bl == Tile.BLOCKED;
         bottomRight = br == Tile.BLOCKED;
-
-
     }
     // Check whether or not we have run into a blocked tile or a normal tile
     public void checkTileMapCollision(){
         currCol = (int)x / tileSize;
-        currRow = (int)y / tileSize;
+        //BUG I HAD TO ADD +3 IN ORDER TO MAKE THE PLAYER STOP THE INFINITY FALLING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        currRow = (int)(y+3) / tileSize;
 
         xdest = x + dx;
         ydest = y + dy;
 
         xtemp = x;
         ytemp = y;
-
+        
+        // Tile floor
         calculateCorners(x,ydest);
         if(dy < 0){
             if(topLeft || topRight){
@@ -124,6 +122,7 @@ public abstract class MapObject {
                 ytemp += dy;
             }
         }
+        // Tile ceilling
         if(dy > 0){
             if(bottomLeft || bottomRight){
                 dy = 0;
@@ -134,6 +133,8 @@ public abstract class MapObject {
                 ytemp += dy;
             }
         }
+        
+        // Left wall of a tile
         calculateCorners(xdest,y);
         if(dx < 0){
             if(topLeft || bottomLeft){
@@ -144,6 +145,8 @@ public abstract class MapObject {
                 xtemp += dx;
             }
         }
+        
+        // Right wall of a tile
         if(dx > 0){
             if(topRight || bottomRight){
                 dx = 0;
@@ -154,7 +157,7 @@ public abstract class MapObject {
             }
         }
         if(!falling){
-            calculateCorners(x, ydest + 1); // check the ground
+            calculateCorners(x, ydest + 3); // check the ground
             if(!bottomLeft && !bottomRight){   // we no longer standing on ground
                 falling = true;
             }
@@ -196,9 +199,6 @@ public abstract class MapObject {
     }
     public void setRight(boolean b){
         right = b;
-    }
-    public void setUp(boolean b){
-        up = b;
     }
     public void setDown(boolean b){
         down = b;
