@@ -89,6 +89,11 @@ public class TileMap {
 			map = new int[numRows][numColumns];
 			width = numColumns * tileSize;
 			height = numRows * tileSize;
+
+			xmin = GamePanel.WIDTH - width;
+			xmax = 0;
+			ymin = GamePanel.HEIGHT - height;
+			ymax = 0;
 			
 			String delims = "\\s+";
 			for(int row = 0; row < numRows; row++){
@@ -105,12 +110,12 @@ public class TileMap {
 	}
 	
 	// Getters
-	public int getX() {
-		return (int)x;
+	public double getX() {
+		return x;
 	}
 	
-	public int getY() {
-		return (int)y;
+	public double getY() {
+		return y;
 	}
 	
 	public int getTileSize() {
@@ -131,6 +136,10 @@ public class TileMap {
 		int r = row_column / numTilesAcross;
 		int c = row_column % numTilesAcross;
 		return tiles[r][c].getType();
+	}
+
+	public void setTween(double d) {
+		tween = d;
 	}
 	
 	// Function for camera to follow the player

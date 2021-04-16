@@ -172,6 +172,19 @@ public abstract class MapObject {
                 y + ymap - height > GamePanel.HEIGHT;
     }
 
+    public void draw(Graphics2D g){
+        // When player/enemy is facing right
+        if(facingRight){
+            g.drawImage(animation.getImage(), (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
+        }
+
+        // When player/enemy is facing left
+        else{
+            g.drawImage(animation.getImage(), (int)(x + xmap - width / 2 + width),
+                    (int)(y + ymap - height / 2), -width, height, null);
+        }
+    }
+
     // Getters
     public int getX() { return (int)x; }
     public int getY() { return (int)y; }

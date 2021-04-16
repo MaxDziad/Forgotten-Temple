@@ -18,7 +18,7 @@ public class Animation {
 	private boolean playedOnce;
 	
 	// Constructor
-	public void Animation(){
+	public Animation(){
 		playedOnce = false;
 	}
 	

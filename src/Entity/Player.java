@@ -168,6 +168,11 @@ public class Player extends MapObject{
 		checkTileMapCollision();
 		setPosition(xtemp, ytemp);
 
+		// check attack has stopped
+		if(currentAction == ATTACKING) {
+			if(animation.isPlayedOnce()) isAttacking = false;
+		}
+
 		// SET ANIMATION
 		// Attacking
 		if(isAttacking){
@@ -240,15 +245,7 @@ public class Player extends MapObject{
 		}
 
 		// When player is facing right
-		if(facingRight){
-			g.drawImage(animation.getImage(), (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
-		}
-
-		// When player is facing left
-		else{
-			g.drawImage(animation.getImage(), (int)(x + xmap - width / 2 + width),
-					(int)(y + ymap - height / 2), -width, height, null);
-		}
+		super.draw(g);
 	}
 
 }
