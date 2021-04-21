@@ -1,6 +1,6 @@
 package GameState;
 
-import Enemies.Slugger;
+import Enemies.Slime;
 import Entity.Enemy;
 import Entity.HUD;
 import Entity.Player;
@@ -37,15 +37,15 @@ public class Level1 extends GameState{
 		tileMap.setPosition(200,200);
 		tileMap.setTween(0.07);
 
-		bg = new Background("/Background/level1.png",0.1);		//load Background
+		bg = new Background("/Background/level12.png",0.1);		//load Background
 
 		player = new Player(tileMap);
 		player.setPosition(300,300);
 
 		enemies = new ArrayList<Enemy>();
 
-		Slugger s;
-		s = new Slugger(tileMap);
+		Slime s;
+		s = new Slime(tileMap);
 		s.setPosition(400,300);
 		enemies.add(s);
 
@@ -60,8 +60,8 @@ public class Level1 extends GameState{
 		// Update player
 		player.update();
 		tileMap.setPosition(
-				GamePanel.WIDTH / 2 - player.getX(),
-				GamePanel.HEIGHT / 2 - player.getY()
+				GamePanel.WIDTH / 2f - player.getX(),
+				GamePanel.HEIGHT / 2f - player.getY()
 		);
 
 		// Set background

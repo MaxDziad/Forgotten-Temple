@@ -26,7 +26,7 @@ public class Player extends MapObject{
 	private ArrayList<BufferedImage[]> sprites;
 	
 	// Number of frames inside each animations
-	private final int[] numberOfFrames = {2, 8, 1, 1, 3};
+	private final int[] numberOfFrames = {2, 8, 1, 1, 4};
 	
 	// Animation actions
 	private static final int IDLE = 0;
@@ -41,18 +41,18 @@ public class Player extends MapObject{
 
 		width = 32;
 		height = 64;
-		cwidth = 32;
-		cheight = 64;
+		cwidth = 24;
+		cheight = 55;
 
 		// Declaring speed of every player action
 		moveSpeed = 0.3;
-		maxSpeed = 1.6;
+		maxSpeed = 2;
 		stopSpeed = 0.4;
 		fallSpeed = 0.15;
-		maxFallSpeed = 4.0;
-		jumpStart = -4.8;
+		maxFallSpeed = 5.0;
+		jumpStart = -5.8;
 		// Variable for higher jumping (hold jump button longer)
-		stopJumpSpeed = 0.3;
+		stopJumpSpeed = 0.5;
 
 		facingRight = true;
 
@@ -74,7 +74,7 @@ public class Player extends MapObject{
 				// Every column
 				for(int j = 0; j < numberOfFrames[i]; j++){
 					if(i == 4){
-						bi[j] = spritesheet.getSubimage(j*width*3, i*height, width, height);
+						bi[j] = spritesheet.getSubimage(j*width*4, i*height, width*4, height);
 						continue;
 					}
 					bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
@@ -179,8 +179,8 @@ public class Player extends MapObject{
 			if(currentAction != ATTACKING){
 				currentAction = ATTACKING;
 				animation.setFrames(sprites.get(ATTACKING));
-				animation.setDelay(50);
-				width = 75;
+				animation.setDelay(80); //80
+				width = 128;
 			}
 		}
 
@@ -209,7 +209,7 @@ public class Player extends MapObject{
 			if(currentAction != WALKING){
 				currentAction = WALKING;
 				animation.setFrames(sprites.get(WALKING));
-				animation.setDelay(40);
+				animation.setDelay(50);
 				width = 32;
 			}
 		}

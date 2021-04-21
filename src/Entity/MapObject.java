@@ -103,7 +103,7 @@ public abstract class MapObject {
     public void checkTileMapCollision(){
         currCol = (int)x / tileSize;
         //BUG I HAD TO ADD +3 IN ORDER TO MAKE THE PLAYER STOP THE INFINITY FALLING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        currRow = (int)(y+3) / tileSize;
+        currRow = (int)y / tileSize;
 
         xdest = x + dx;
         ydest = y + dy;

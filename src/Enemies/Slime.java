@@ -9,21 +9,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Slugger extends Enemy {
+public class Slime extends Enemy {
 
     private BufferedImage[] sprites;
 
-    public Slugger (TileMap tm){
+    public Slime(TileMap tm){
         super(tm);
-        moveSpeed = 0.3;
+        moveSpeed = 0.01;
         maxSpeed = 0.3;
         fallSpeed = 0.2;
         maxFallSpeed = 10.0;
 
-        width = 30;
-        height = 30;
-        cwidth = 20;
-        cheight = 20;
+        width = 64;
+        height = 48;
+        cwidth = 30;
+        cheight = 40;
 
         health = maxHealth = 2;
         damage = 1;
@@ -31,7 +31,7 @@ public class Slugger extends Enemy {
         // Load sprites
         try{
             BufferedImage spritesheet = ImageIO.read(
-                    getClass().getResourceAsStream("/Sprites/slugger.gif"));
+                    getClass().getResourceAsStream("/Sprites/slime.png"));
 
             sprites = new BufferedImage[3];
             for(int i = 0; i < sprites.length; i++){
@@ -46,7 +46,7 @@ public class Slugger extends Enemy {
 
         animation = new Animation();
         animation.setFrames(sprites);
-        animation.setDelay(300);
+        animation.setDelay(500);
 
         right = true;
         facingRight = true;
