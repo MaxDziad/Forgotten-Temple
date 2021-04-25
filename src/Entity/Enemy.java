@@ -13,8 +13,8 @@ public class Enemy extends MapObject{
     protected long flinchTimer;
 
 
-    public Enemy(TileMap tm) {
-        super(tm);
+    public Enemy(TileMap tm, String spritesPath, int[] numberOfFrames) {
+        super(tm, spritesPath, numberOfFrames);
 
     }
 
@@ -34,6 +34,7 @@ public class Enemy extends MapObject{
         flinching = true;
         flinchTimer = System.nanoTime();
     }
+    
     public void update(){
 
     }

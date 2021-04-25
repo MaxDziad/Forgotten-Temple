@@ -8,50 +8,37 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class Slime extends Enemy {
 
-    private BufferedImage[] sprites;
-
     public Slime(TileMap tm){
-        super(tm);
-        moveSpeed = 0.01;
-        maxSpeed = 0.3;
-        fallSpeed = 0.2;
-        maxFallSpeed = 10.0;
-
-        width = 64;
-        height = 48;
-        cwidth = 30;
-        cheight = 40;
-
-        health = maxHealth = 2;
-        damage = 1;
-
-        // Load sprites
-        try{
-            BufferedImage spritesheet = ImageIO.read(
-                    getClass().getResourceAsStream("/Sprites/slime.png"));
-
-            sprites = new BufferedImage[3];
-            for(int i = 0; i < sprites.length; i++){
-                sprites[i] = spritesheet.getSubimage(i * width,0,width,height);
-
-            }
-
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        animation = new Animation();
-        animation.setFrames(sprites);
+        super(tm,"/Sprites/slime.png",  new int[] {3, 2});
+        
+        animation.setFrames(sprites.get(WALKING));
         animation.setDelay(500);
 
         right = true;
         facingRight = true;
 
     }
+    
+    @Override
+    protected void initializeStats() {
+        moveSpeed = 0.01;
+        maxSpeed = 0.3;
+        fallSpeed = 0.2;
+        maxFallSpeed = 10.0;
+    
+        width = 64;
+        height = 48;
+        cwidth = 30;
+        cheight = 40;
+    
+        health = maxHealth = 100;
+        damage = 1;
+    }
+    
     private void getNextPosition(){
 
         // Accelarating enemy move speed after pressing and holding left/right key
@@ -87,8 +74,16 @@ public class Slime extends Enemy {
         // Check flinching
         if(flinching) {
             long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
-            if(elapsed > 400){
+            if(currentAction != HIT) {
+                currentAction = HIT;
+                animation.setFrames(sprites.get(HIT));
+                animation.setDelay(100);
+            }
+            if(elapsed > 200){
                 flinching = false;
+                currentAction = WALKING;
+                animation.setFrames(sprites.get(WALKING));
+                animation.setDelay(500);
             }
         }
 
@@ -112,7 +107,7 @@ public class Slime extends Enemy {
 
     public void draw(Graphics2D g){
 
-        if(notOnScreen()) return;
+        //if(notOnScreen()) return;
 
         setMapPosition();
         super.draw(g);

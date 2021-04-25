@@ -4,7 +4,10 @@ import GameMain.GamePanel;
 import TileMap.TileMap;
 import TileMap.Tile;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public abstract class MapObject {
 
@@ -36,19 +39,15 @@ public abstract class MapObject {
     protected double xtemp;    // temporary x
     protected double ytemp;    // temporary y
 
-    // 4-point detectors for collision detection (each for every corner)
+    // 4-point detectors for collision detection (each for every corner) + 2 on the left and right
     protected boolean topLeft;
     protected boolean topRight;
     protected boolean bottomLeft;
     protected boolean bottomRight;
-
-    // animation
-    protected Animation animation;
-    protected int currentAction;
-    protected int previousAction;
-    protected boolean facingRight; // if it's facingRight, we don't do anything with it, if it's facingLeft, we have to
-                                    // flip the sprite
-
+    // Additional, work in progress
+    protected boolean leftCollision;
+    protected boolean rightCollision;
+    
     // movement
     protected boolean left;
     protected boolean right;
@@ -64,11 +63,64 @@ public abstract class MapObject {
     protected double maxFallSpeed;
     protected double jumpStart;
     protected double stopJumpSpeed;  //holding longer jump button = longer jump
+    
+    // list of sprites
+    protected ArrayList<BufferedImage[]> sprites;
+    
+    // animation
+    protected Animation animation;
+    protected int currentAction;
+    protected int previousAction;
+    // if it's facing left, we have to flip the sprite
+    protected boolean facingRight;
+    
+    // animation actions
+    protected static final int WALKING = 0;
+    protected static final int HIT = 1;
+    protected static final int DEATH = 2;
+    protected static final int FALLING = 3;
+    protected static final int ATTACKING = 4;
+    protected static final int JUMPING = 5;
+    protected static final int IDLE = 6;
 
     // Constructor
-    public MapObject(TileMap tm){
+    public MapObject(TileMap tm, String spritesPath, int[] numberOfFrames){
         tileMap = tm;
         tileSize = tm.getTileSize();
+        initializeStats();
+        loadSprites(spritesPath, numberOfFrames);
+        animation = new Animation();
+    }
+    
+    protected void initializeStats() {}
+    
+    private void loadSprites(String spritesPath, int[] numberOfFrames){
+        try{
+            // Load sprite
+            BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(spritesPath));
+        
+            int numberOfRows = spritesheet.getHeight() / height;
+        
+            sprites = new ArrayList<>();
+        
+            // Every row
+            for(int i = 0; i < numberOfRows; i++){
+                BufferedImage[] bi = new BufferedImage[numberOfFrames[i]];
+                // Every column
+                for(int j = 0; j < numberOfFrames[i]; j++){
+                    if(i == 4){
+                        bi[j] = spritesheet.getSubimage(j*width*4, i*height, width*4, height);
+                        continue;
+                    }
+                    bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
+                }
+                // Add row to sprites variable
+                sprites.add(bi);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
     
     // Checks if map object collided with another one
@@ -77,9 +129,10 @@ public abstract class MapObject {
         Rectangle r2 = o.getRectangle();
         return r1.intersects(r2);
     }
-
+    
+    
     public Rectangle getRectangle(){
-        return new Rectangle((int)x - cwidth,(int)y - cheight,cwidth,cheight);
+        return new Rectangle((int)x - cwidth,(int)y - cheight, cwidth, cheight);
     }
 
     // Finds corners of blocking tiles
@@ -89,20 +142,33 @@ public abstract class MapObject {
         int topTile = (int)(y - cheight / 2) / tileSize;
         int bottomTile = (int)(y + cheight / 2 - 1) / tileSize;
 
-        int tl = tileMap.getType(topTile,leftTile);
-        int tr = tileMap.getType(topTile,rightTile);
-        int bl = tileMap.getType(bottomTile,leftTile);
-        int br = tileMap.getType(bottomTile,rightTile);
-
+        int tl = tileMap.getType(topTile, leftTile);
+        int tr = tileMap.getType(topTile, rightTile);
+        int bl = tileMap.getType(bottomTile, leftTile);
+        int br = tileMap.getType(bottomTile, rightTile);
+        
         topLeft = tl == Tile.BLOCKED;
         topRight = tr == Tile.BLOCKED;
         bottomLeft = bl == Tile.BLOCKED;
         bottomRight = br == Tile.BLOCKED;
+        
+//        FOR EVENTUAL BUG
+//        if(height == 64) {
+//            // Because cheight of 64 pixel is 55
+//            int l = tileMap.getType(topTile + 8, leftTile);
+//            int r = tileMap.getType(topTile + 8, rightTile);
+//            leftCollision = l == Tile.BLOCKED;
+//            rightCollision = r == Tile.BLOCKED;
+//        }
+//        else{
+//            leftCollision = false;
+//            rightCollision = false;
+//        }
     }
+    
     // Check whether or not we have run into a blocked tile or a normal tile
     public void checkTileMapCollision(){
         currCol = (int)x / tileSize;
-        //BUG I HAD TO ADD +3 IN ORDER TO MAKE THE PLAYER STOP THE INFINITY FALLING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         currRow = (int)y / tileSize;
 
         xdest = x + dx;
@@ -110,9 +176,19 @@ public abstract class MapObject {
 
         xtemp = x;
         ytemp = y;
-        
-        // Tile floor
+    
         calculateCorners(x,ydest);
+        checkCollisionWithCeiling();
+        checkCollisionWithFloor();
+        
+        calculateCorners(xdest,y);
+        checkCollisionWithLeftWall();
+        checkCollisionWithRightWall();
+        
+        checkIfStillOnFloor();
+    }
+    
+    private void checkCollisionWithCeiling(){
         if(dy < 0){
             if(topLeft || topRight){
                 dy = 0;
@@ -122,7 +198,9 @@ public abstract class MapObject {
                 ytemp += dy;
             }
         }
-        // Tile ceilling
+    }
+    
+    private void checkCollisionWithFloor(){
         if(dy > 0){
             if(bottomLeft || bottomRight){
                 dy = 0;
@@ -133,11 +211,11 @@ public abstract class MapObject {
                 ytemp += dy;
             }
         }
-        
-        // Left wall of a tile
-        calculateCorners(xdest,y);
+    }
+    
+    private void checkCollisionWithLeftWall(){
         if(dx < 0){
-            if(topLeft || bottomLeft){
+            if(topLeft || bottomLeft || leftCollision){
                 dx = 0;
                 xtemp = currCol * tileSize + cwidth / 2;
             }
@@ -145,10 +223,11 @@ public abstract class MapObject {
                 xtemp += dx;
             }
         }
-        
-        // Right wall of a tile
+    }
+    
+    private void checkCollisionWithRightWall(){
         if(dx > 0){
-            if(topRight || bottomRight){
+            if(topRight || bottomRight || rightCollision){
                 dx = 0;
                 xtemp = (currCol + 1) * tileSize - cwidth / 2;
             }
@@ -156,13 +235,15 @@ public abstract class MapObject {
                 xtemp += dx;
             }
         }
+    }
+    
+    private void checkIfStillOnFloor(){
         if(!falling){
             calculateCorners(x, ydest + 3); // check the ground
             if(!bottomLeft && !bottomRight){   // we no longer standing on ground
                 falling = true;
             }
         }
-
     }
 
     // Check whether or not the object is on the screen
@@ -198,10 +279,12 @@ public abstract class MapObject {
         this.x = x;
         this.y = y;
     }
+    
     public void setVector(double dx, double dy) {
         this.dx = dx;
         this.dy = dy;
     }
+    
     public void setMapPosition(){
         xmap = tileMap.getX();
         ymap = tileMap.getY();
@@ -210,15 +293,19 @@ public abstract class MapObject {
     public void setLeft(boolean b){
         left = b;
     }
+    
     public void setRight(boolean b){
         right = b;
     }
+    
     public void setDown(boolean b){
         down = b;
     }
+    
     public void setJumping(boolean b){
         jumping = b;
     }
+    
 
 
 }

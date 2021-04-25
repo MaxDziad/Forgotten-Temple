@@ -22,28 +22,26 @@ public class Player extends MapObject{
 	private int whipDamage;
 	private int whipRange;
 	
-	// Animations
-	private ArrayList<BufferedImage[]> sprites;
 	
 	// Number of frames inside each animations
-	private final int[] numberOfFrames = {2, 8, 1, 1, 4};
 	
-	// Animation actions
-	private static final int IDLE = 0;
-	private static final int WALKING = 1;
-	private static final int JUMPING = 2;
-	private static final int FALLING = 3;
-	private static final int ATTACKING = 4;
 
 	// Constructor
 	public Player(TileMap tileMap){
-		super(tileMap);
-
+		super(tileMap, "/Sprites/Player.png",  new int[] {8, 1, 1, 1, 4, 1, 2});
+		
+		currentAction = IDLE;
+		animation.setFrames(sprites.get(IDLE));
+		animation.setDelay(400);
+	}
+	
+	@Override
+	protected void initializeStats() {
 		width = 32;
 		height = 64;
 		cwidth = 24;
 		cheight = 55;
-
+		
 		// Declaring speed of every player action
 		moveSpeed = 0.3;
 		maxSpeed = 2;
@@ -51,48 +49,18 @@ public class Player extends MapObject{
 		fallSpeed = 0.15;
 		maxFallSpeed = 5.0;
 		jumpStart = -5.8;
+		
 		// Variable for higher jumping (hold jump button longer)
 		stopJumpSpeed = 0.5;
-
+		
 		facingRight = true;
-
+		
 		currentHealth = maxHealth = 3;
-
-		whipDamage = 8;
-		whipRange = 75;
-
-		// Sprites for animation
-		try{
-			// Load sprite
-			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream("/Sprites/Player.png"));
-
-			sprites = new ArrayList<BufferedImage[]>();
-
-			// Every row
-			for(int i = 0; i < 5; i++){
-				BufferedImage[] bi = new BufferedImage[numberOfFrames[i]];
-				// Every column
-				for(int j = 0; j < numberOfFrames[i]; j++){
-					if(i == 4){
-						bi[j] = spritesheet.getSubimage(j*width*4, i*height, width*4, height);
-						continue;
-					}
-					bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
-				}
-				// Add row to sprites variable
-				sprites.add(bi);
-			}
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-
-		animation = new Animation();
-		currentAction = IDLE;
-		animation.setFrames(sprites.get(IDLE));
-		animation.setDelay(400);
+		
+		whipDamage = 20;
+		whipRange = 52;
 	}
-
+	
 	// Getters
 	public int getCurrentHealth() {
 		return currentHealth;
@@ -106,7 +74,27 @@ public class Player extends MapObject{
 	public void attack(){
 		isAttacking = true;
 	}
-
+	
+	public void checkAttack(ArrayList<Enemy> enemies){
+		
+		if(isAttacking){
+			for(int i = 0; i < enemies.size(); i++){
+				Enemy e = enemies.get(i);
+				if(e.getX() > x && e.getX() < x + whipRange && isEnemyOnTheSameHeight(e) && facingRight){
+					e.hit(whipDamage);
+					continue;
+				}
+				if(e.getX() < x && e.getX() > x - whipRange && isEnemyOnTheSameHeight(e) && !facingRight){
+					e.hit(whipDamage);
+				}
+			}
+		}
+	}
+	
+	private boolean isEnemyOnTheSameHeight(Enemy enemy){
+		return enemy.getY() > y - height/2 && enemy.getY() < y + height/2;
+	}
+	
 	// Calculate the next position of the player
 	private void getNextPosition(){
 
@@ -179,7 +167,7 @@ public class Player extends MapObject{
 			if(currentAction != ATTACKING){
 				currentAction = ATTACKING;
 				animation.setFrames(sprites.get(ATTACKING));
-				animation.setDelay(80); //80
+				animation.setDelay(60);
 				width = 128;
 			}
 		}

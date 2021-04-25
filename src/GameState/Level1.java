@@ -57,8 +57,10 @@ public class Level1 extends GameState{
 	@Override
 	public void update() {
 
-		// Update player
+		// update player
 		player.update();
+		
+		// center camera
 		tileMap.setPosition(
 				GamePanel.WIDTH / 2f - player.getX(),
 				GamePanel.HEIGHT / 2f - player.getY()
@@ -66,10 +68,18 @@ public class Level1 extends GameState{
 
 		// Set background
 		bg.setPosition(tileMap.getX(),tileMap.getY());
-
+		
+		// attack enemies
+		player.checkAttack(enemies);
+		
 		// Update all enemies
 		for(int i = 0; i < enemies.size(); i++){
 			enemies.get(i).update();
+			if(enemies.get(i).notOnScreen()) continue;
+			if(enemies.get(i).isDead()){
+				enemies.remove(i);
+				i--;
+			}
 		}
 	}
 	
@@ -89,7 +99,7 @@ public class Level1 extends GameState{
 		for(int i = 0; i < enemies.size(); i++){
 			enemies.get(i).draw(g);
 		}
-
+		
 		// Draw HUD
 		hud.draw(g);
 	}
