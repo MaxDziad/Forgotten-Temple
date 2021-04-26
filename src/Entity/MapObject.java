@@ -71,6 +71,7 @@ public abstract class MapObject {
     protected Animation animation;
     protected int currentAction;
     protected int previousAction;
+    
     // if it's facing left, we have to flip the sprite
     protected boolean facingRight;
     
@@ -269,11 +270,15 @@ public abstract class MapObject {
     // Getters
     public int getX() { return (int)x; }
     public int getY() { return (int)y; }
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
-    public int getCWidth() { return cwidth; }
-    public int getCHeight() { return cheight; }
-
+    
+    protected double getDx() {
+        return dx;
+    }
+    
+    protected double getDy() {
+        return dy;
+    }
+    
     // Setters
     public void setPosition(double x, double y){
         this.x = x;

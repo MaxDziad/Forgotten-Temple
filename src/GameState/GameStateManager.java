@@ -11,18 +11,19 @@ public class GameStateManager {
 	public static final int LEVEL1 = 1;
 	
 	public GameStateManager() {
-		
+		initialize();
+	}
+	
+	public void initialize(){
 		gameStates = new ArrayList<GameState>();
-		
 		currentState = MENU;
 		gameStates.add(new MenuState(this));
 		gameStates.add(new Level1(this));
-		
 	}
 	
 	public void setState(int state) {
 		currentState = state;
-		gameStates.get(currentState).init();
+		gameStates.get(currentState).initialize();
 	}
 	
 	public void update() {

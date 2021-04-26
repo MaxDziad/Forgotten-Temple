@@ -6,7 +6,7 @@ import java.nio.Buffer;
 
 public class Animation {
 	
-	// Animationn frames
+	// Animation frames
 	private BufferedImage[] frames;
 	private int currentFrame;
 	
@@ -14,7 +14,6 @@ public class Animation {
 	private long startTime;
 	private long delay;
 	
-	// Checkes if animation is played already
 	private boolean playedOnce;
 	
 	// Constructor

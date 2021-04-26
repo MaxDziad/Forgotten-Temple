@@ -23,9 +23,10 @@ public class MenuState extends GameState {
 	private Font font;
 	
 	public MenuState(GameStateManager gsm) {
-		
-		this.gsm = gsm;
-		
+		super(gsm);
+	}
+	
+	public void initialize() {
 		try {
 			
 			bg = new Background("/Background/menu.png", 1);
@@ -40,26 +41,23 @@ public class MenuState extends GameState {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
-	public void init() {}
 	
 	public void update() {
 		bg.update();
 	}
 	
-	public void draw(Graphics2D g) {
-		
-		// draw bg
+	public void drawBackground(Graphics2D g){
 		bg.draw(g);
-		
-		// draw title
+	}
+	
+	public void drawTitle(Graphics2D g){
 		g.setColor(titleColor);
 		g.setFont(titleFont);
 		g.drawString("Super Student Bros", 20, 100);
-		
-		// draw menu options
+	}
+	
+	public void drawMenuOptions(Graphics2D g){
 		g.setFont(font);
 		for(int i = 0; i < options.length; i++) {
 			if(i == currentChoice) {
@@ -70,7 +68,12 @@ public class MenuState extends GameState {
 			}
 			g.drawString(options[i], 160, 400 + i * 60);
 		}
-		
+	}
+	
+	public void draw(Graphics2D g) {
+		drawBackground(g);
+		drawTitle(g);
+		drawMenuOptions(g);
 	}
 	
 	private void select() {
@@ -85,25 +88,33 @@ public class MenuState extends GameState {
 		}
 	}
 	
+	public void scrollUp(){
+		currentChoice--;
+		if(currentChoice == -1) {
+			currentChoice = options.length - 1;
+		}
+	}
+	
+	public void scrollDown(){
+		currentChoice++;
+		if(currentChoice == options.length) {
+			currentChoice = 0;
+		}
+	}
+	
 	public void keyPressed(int k) {
 		if(k == KeyEvent.VK_ENTER){
 			select();
 		}
 		if(k == KeyEvent.VK_UP) {
-			currentChoice--;
-			if(currentChoice == -1) {
-				currentChoice = options.length - 1;
-			}
+			scrollUp();
 		}
 		if(k == KeyEvent.VK_DOWN) {
-			currentChoice++;
-			if(currentChoice == options.length) {
-				currentChoice = 0;
-			}
+			scrollDown();
 		}
 	}
-	public void keyReleased(int k) {}
 	
+	public void keyReleased(int k) {}
 }
 
 

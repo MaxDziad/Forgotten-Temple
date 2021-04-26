@@ -26,7 +26,7 @@ public class TileMap {
 	
 	// Map
 	private int[][] map;
-	private int tileSize;
+	private final int tileSize;
 	private int numRows;
 	private int numColumns;
 	private int width;
@@ -40,8 +40,8 @@ public class TileMap {
 	// Optimized drawing that tiles out of bounds are not rendered
 	private int rowOffset;
 	private int columnOffset;
-	private int numRowsToDraw;
-	private int numColumnsToDraw;
+	private final int numRowsToDraw;
+	private final int numColumnsToDraw;
 	
 	// Constructor
 	public TileMap(int tileSize){
@@ -57,7 +57,6 @@ public class TileMap {
 	public void loadTiles(String s){
 		try{
 			tileset = ImageIO.read(getClass().getResourceAsStream(s));
-			// How many tiles in tile set
 			numTilesAcross = tileset.getWidth() / tileSize;
 			tiles = new Tile[2][numTilesAcross];
 			
@@ -76,7 +75,7 @@ public class TileMap {
 	
 	
 	// To load current's level map
-	// First line is the number of columns, second line is the number of rows, the rest is the map of current level
+	// First line is the number of columns, second line is the number of rows, the rest is the map of current level.
 	public void loadMap(String s){
 		try{
 			//Loading map file
@@ -171,15 +170,15 @@ public class TileMap {
 				// No need to draw more columns than should be
 				if(col >= numColumns) break;
 				
-				//First tile in tileset should be transparent so no need to draw it
+				// First tile in tileset should be transparent so no need to draw it
 				if(map[row][col] == 0) continue;
 				
+				// Draw the rest
 				int row_columns = map[row][col];
 				int r = row_columns / numTilesAcross;
 				int c = row_columns % numTilesAcross;
-				
-				g.drawImage(tiles[r][c].getImage(),
-					(int)x + col * tileSize, (int)y + row * tileSize, null);
+				g.drawImage(tiles[r][c].getImage(), (int)x + col * tileSize,
+					(int)y + row * tileSize, null);
 				
 			}
 		}

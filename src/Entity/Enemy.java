@@ -2,17 +2,25 @@ package Entity;
 
 import TileMap.TileMap;
 
-public class Enemy extends MapObject{
+public abstract class Enemy extends MapObject{
 
     protected int health;
     protected int maxHealth;
     protected boolean dead;
     protected int damage;
-
+    
+    protected boolean attackedOnce;
     protected boolean flinching;
     protected long flinchTimer;
-
-
+    
+    public boolean wasAttackedOnce() {
+        return attackedOnce;
+    }
+    
+    public void setAttackedOnce(boolean attackedOnce) {
+        this.attackedOnce = attackedOnce;
+    }
+    
     public Enemy(TileMap tm, String spritesPath, int[] numberOfFrames) {
         super(tm, spritesPath, numberOfFrames);
 
@@ -24,9 +32,8 @@ public class Enemy extends MapObject{
     public int getDamage(){
         return damage;
     }
-
-    // Enemy gets hit
-    public void hit(int damage){
+    
+    public void takeHit(int damage){
         if(dead || flinching) return;
         health -= damage;
         if(health < 0) health = 0;

@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 
 public class Tile {
 	
-	// Attributes
 	private BufferedImage image;
 	private int type;
 	
@@ -16,10 +15,8 @@ public class Tile {
 	public Tile(BufferedImage image, int type){
 		this.image = image;
 		this.type = type;
-		
 	}
 	
-	// Getters
 	public BufferedImage getImage(){
 		return image;
 	}

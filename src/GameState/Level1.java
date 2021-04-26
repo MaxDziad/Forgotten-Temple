@@ -22,61 +22,68 @@ public class Level1 extends GameState{
 	private ArrayList<Enemy> enemies;
 
 	private HUD hud;
-
 	
 	public Level1(GameStateManager gsm){
-		this.gsm = gsm;
-		init();
+		super(gsm);
 	}
 	
 	@Override
-	public void init() {
+	public void initialize() {
 		tileMap = new TileMap(32);
 		tileMap.loadTiles("/TileSets/level1.png");            //load TileSet
 		tileMap.loadMap("/Maps/Level1.map");                  //load Map
 		tileMap.setPosition(200,200);
 		tileMap.setTween(0.07);
 
-		bg = new Background("/Background/level12.png",0.1);		//load Background
+		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
 		player.setPosition(300,300);
+		
+		hud = new HUD(player);
 
 		enemies = new ArrayList<Enemy>();
-
+		populateEnemies();
+	}
+	
+	public void populateEnemies(){
 		Slime s;
 		s = new Slime(tileMap);
 		s.setPosition(400,300);
 		enemies.add(s);
-
-		hud = new HUD(player);
-
-
 	}
 	
 	@Override
 	public void update() {
-
-		// update player
 		player.update();
-		
-		// center camera
+		centerCamera();
+		moveBackground();
+		checkPlayerInteractionWithEnemies();
+		updateAllEnemies();
+	}
+	
+	public void centerCamera(){
 		tileMap.setPosition(
-				GamePanel.WIDTH / 2f - player.getX(),
-				GamePanel.HEIGHT / 2f - player.getY()
+			GamePanel.WIDTH / 2f - player.getX(),
+			GamePanel.HEIGHT / 2f - player.getY()
 		);
-
-		// Set background
+	}
+	
+	public void moveBackground(){
 		bg.setPosition(tileMap.getX(),tileMap.getY());
-		
-		// attack enemies
+	}
+	
+	// Getting hit by enemies and vice-versa
+	public void checkPlayerInteractionWithEnemies(){
 		player.checkAttack(enemies);
-		
-		// Update all enemies
+	}
+	
+	public void updateAllEnemies(){
 		for(int i = 0; i < enemies.size(); i++){
-			enemies.get(i).update();
-			if(enemies.get(i).notOnScreen()) continue;
-			if(enemies.get(i).isDead()){
+			Enemy enemy = enemies.get(i);
+			enemy.update();
+			if(enemy.notOnScreen()) continue;
+			if(enemy.isDead()){
 				enemies.remove(i);
 				i--;
 			}
@@ -85,23 +92,17 @@ public class Level1 extends GameState{
 	
 	@Override
 	public void draw(Graphics2D g) {
-
-		// Draw background
 		bg.draw(g);
-		
-		// Draw tilemap
 		tileMap.draw(g);
-
-		// Draw player
 		player.draw(g);
-
-		// Draw enemies
-		for(int i = 0; i < enemies.size(); i++){
-			enemies.get(i).draw(g);
-		}
-		
-		// Draw HUD
+		drawEnemies(g);
 		hud.draw(g);
+	}
+	
+	public void drawEnemies(Graphics2D g){
+		for(Enemy enemy : enemies) {
+			enemy.draw(g);
+		}
 	}
 	
 	@Override
@@ -111,6 +112,7 @@ public class Level1 extends GameState{
 		if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(true);
 		if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(true);
 		if(k == KeyEvent.VK_E) player.attack();
+		if(k == KeyEvent.VK_SHIFT) player.setRunning(true);
 	}
 	
 	@Override
@@ -119,5 +121,6 @@ public class Level1 extends GameState{
 		if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(false);
 		if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(false);
 		if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(false);
+		if(k == KeyEvent.VK_SHIFT) player.setRunning(false);
 	}
 }

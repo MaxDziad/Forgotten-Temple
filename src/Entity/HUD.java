@@ -13,6 +13,11 @@ public class HUD {
 
     public HUD(Player p){
         player = p;
+        initializeHUDImage();
+
+    }
+    
+    public void initializeHUDImage(){
         try{
             image = ImageIO.read(getClass().getResourceAsStream(" "));
             font = new Font("Arial",Font.PLAIN,16);
@@ -20,7 +25,6 @@ public class HUD {
         catch (Exception e){
             e.printStackTrace();
         }
-
     }
 
     public void draw(Graphics2D g){
@@ -28,6 +32,5 @@ public class HUD {
         g.setFont(font);
         g.setColor(Color.BLUE);
         g.drawString(player.getCurrentHealth() +"/" + player.getMaxHealth(),30,25);
-
     }
 }

@@ -2,10 +2,7 @@ package Entity;
 
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.lang.management.BufferPoolMXBean;
 import java.util.ArrayList;
 
 public class Player extends MapObject{
@@ -15,24 +12,21 @@ public class Player extends MapObject{
 	private int maxHealth;
 	private boolean dead;
 	private boolean flinching;
-	private long flinchTime;
+	private long flinchTimer;
 	
 	// Whip attacks
 	private boolean isAttacking;
 	private int whipDamage;
 	private int whipRange;
 	
+	// For running
+	private boolean running;
+	private boolean startedToRun;
 	
-	// Number of frames inside each animations
-	
-
 	// Constructor
 	public Player(TileMap tileMap){
 		super(tileMap, "/Sprites/Player.png",  new int[] {8, 1, 1, 1, 4, 1, 2});
-		
-		currentAction = IDLE;
-		animation.setFrames(sprites.get(IDLE));
-		animation.setDelay(400);
+		setIdleAnimation();
 	}
 	
 	@Override
@@ -58,7 +52,19 @@ public class Player extends MapObject{
 		currentHealth = maxHealth = 3;
 		
 		whipDamage = 20;
-		whipRange = 52;
+		whipRange = 80;
+		
+		running = false;
+		startedToRun = false;
+	}
+	
+	public void takeHit(int damage){
+		if(flinching) return;
+		currentHealth -= damage;
+		if(currentHealth < 0) currentHealth = 0;
+		if(currentHealth == 0) dead = true;
+		flinching = true;
+		flinchTimer = System.nanoTime();
 	}
 	
 	// Getters
@@ -76,19 +82,36 @@ public class Player extends MapObject{
 	}
 	
 	public void checkAttack(ArrayList<Enemy> enemies){
-		
-		if(isAttacking){
-			for(int i = 0; i < enemies.size(); i++){
-				Enemy e = enemies.get(i);
-				if(e.getX() > x && e.getX() < x + whipRange && isEnemyOnTheSameHeight(e) && facingRight){
-					e.hit(whipDamage);
+		for(Enemy enemy : enemies) {
+			if(intersects(enemy)) {
+				if(!flinching) {
+					if(enemy.getX() > x) setVector(-5, -5);
+					else setVector(5, -5);
+				}
+				takeHit(enemy.getDamage());
+			}
+			if(isAttacking && !enemy.wasAttackedOnce()) {
+				if(isEnemyAttackedFromLeft(enemy)) {
+					enemy.takeHit(whipDamage);
+					enemy.setVector(enemy.getDx() + 3,-2);
+					enemy.setAttackedOnce(true);
 					continue;
 				}
-				if(e.getX() < x && e.getX() > x - whipRange && isEnemyOnTheSameHeight(e) && !facingRight){
-					e.hit(whipDamage);
+				if(isEnemyAttackedFromRight(enemy)) {
+					enemy.takeHit(whipDamage);
+					enemy.setVector(enemy.getDx() - 3,-2);
+					enemy.setAttackedOnce(true);
 				}
 			}
 		}
+	}
+	
+	private boolean isEnemyAttackedFromLeft(Enemy enemy){
+		return enemy.getX() > x && enemy.getX() < x + whipRange && isEnemyOnTheSameHeight(enemy) && facingRight;
+	}
+	
+	private boolean isEnemyAttackedFromRight(Enemy enemy){
+		return enemy.getX() < x && enemy.getX() > x - whipRange && isEnemyOnTheSameHeight(enemy) && !facingRight;
 	}
 	
 	private boolean isEnemyOnTheSameHeight(Enemy enemy){
@@ -98,6 +121,30 @@ public class Player extends MapObject{
 	// Calculate the next position of the player
 	private void getNextPosition(){
 
+		calculatePlayerVerticalPosition();
+
+		// Can't attack while move (airborn excluded)
+		if(moveWhileAttackingOnlyInAirborne()){
+			dx = 0;
+		}
+
+		// Jumping
+		if(jumping && !falling){
+			dy = jumpStart;
+			falling = true;
+		}
+
+		// Falling
+		if(falling){
+			calculateFalling();
+		}
+	}
+	
+	private boolean moveWhileAttackingOnlyInAirborne(){
+		return currentAction == ATTACKING && !(jumping || falling);
+	}
+	
+	private void calculatePlayerVerticalPosition() {
 		// Accelarating player move speed after pressing and holding left/right key
 		if (left) {
 			dx -= moveSpeed;
@@ -111,7 +158,7 @@ public class Player extends MapObject{
 				dx = maxSpeed;
 			}
 		}
-
+		
 		// Slowing player move speed after realising left/right key
 		else{
 			if(dx > 0) {
@@ -127,29 +174,18 @@ public class Player extends MapObject{
 				}
 			}
 		}
-
-		// Can't attack while move (airborn excluded)
-		if(currentAction == ATTACKING && !(jumping || falling)){
-			dx = 0;
-		}
-
-		// Jumping
-		if(jumping && !falling){
-			dy = jumpStart;
-			falling = true;
-		}
-
-		// Falling
-		if(falling){
-			dy += fallSpeed;
-			if(dy > 0) jumping = false;
-			if(dy < 0 && !jumping) dy += stopJumpSpeed;
-
-			if(dy > maxFallSpeed) dy = maxFallSpeed;
-		}
 	}
-
+	
+	private void calculateFalling(){
+		dy += fallSpeed;
+		if(dy > 0) jumping = false;
+		if(dy < 0 && !jumping) dy += stopJumpSpeed;
+		if(dy > maxFallSpeed) dy = maxFallSpeed;
+	}
+	
 	public void update(){
+		if(running) maxSpeed = 3;
+		else maxSpeed = 2;
 
 		// Update position
 		getNextPosition();
@@ -160,56 +196,32 @@ public class Player extends MapObject{
 		if(currentAction == ATTACKING) {
 			if(animation.isPlayedOnce()) isAttacking = false;
 		}
-
-		// SET ANIMATION
-		// Attacking
+		
+		if(flinching){
+			long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
+			if (elapsed > 2000){
+				flinching = false;
+			}
+		}
+		
 		if(isAttacking){
 			if(currentAction != ATTACKING){
-				currentAction = ATTACKING;
-				animation.setFrames(sprites.get(ATTACKING));
-				animation.setDelay(60);
-				width = 128;
+				setAttackAnimation();
 			}
 		}
-
-		// Falling
+		
 		else if(dy > 0){
-			if(currentAction != FALLING){
-				currentAction = FALLING;
-				animation.setFrames(sprites.get(FALLING));
-				animation.setDelay(-1);
-				width = 32;
-			}
+			if(currentAction != FALLING) setFallingAnimation();
 		}
-
-		// Jumping
-		else if(dy < 0){
-			if(currentAction != JUMPING){
-				currentAction = JUMPING;
-				animation.setFrames(sprites.get(JUMPING));
-				animation.setDelay(-1);
-				width = 32;
-			}
+		
+		else if(dy < 0) {
+			if(currentAction != JUMPING) setJumpingAnimation();
 		}
-
-		// Walking
-		else if(left || right){
-			if(currentAction != WALKING){
-				currentAction = WALKING;
-				animation.setFrames(sprites.get(WALKING));
-				animation.setDelay(50);
-				width = 32;
-			}
-		}
-
-		// Idle
+		
+		else if(left || right) walkOrRunAnimation();
+		
 		else{
-			if(currentAction != IDLE){
-				currentAction = IDLE;
-				animation.setFrames(sprites.get(IDLE));
-				animation.setDelay(400);
-				width = 32;
-			}
+			if(currentAction != IDLE) setIdleAnimation();
 		}
 
 		animation.update();
@@ -220,7 +232,67 @@ public class Player extends MapObject{
 			if(left) facingRight = false;
 		}
 	}
-
+	
+	private void setAttackAnimation(){
+		currentAction = ATTACKING;
+		animation.setFrames(sprites.get(ATTACKING));
+		animation.setDelay(60);
+		width = 128;
+	}
+	
+	private void setFallingAnimation(){
+		currentAction = FALLING;
+		animation.setFrames(sprites.get(FALLING));
+		animation.setDelay(-1);
+		width = 32;
+	}
+	
+	private void setJumpingAnimation(){
+		currentAction = FALLING;
+		animation.setFrames(sprites.get(FALLING));
+		animation.setDelay(-1);
+		width = 32;
+	}
+	
+	private void setWalkingAnimation(int delay){
+		currentAction = WALKING;
+		animation.setFrames(sprites.get(WALKING));
+		animation.setDelay(delay);
+		width = 32;
+	}
+	
+	private void setIdleAnimation(){
+		currentAction = IDLE;
+		animation.setFrames(sprites.get(IDLE));
+		animation.setDelay(400);
+		width = 32;
+	}
+	
+	private void walkOrRunAnimation(){
+		// Change pace while moving
+		if(currentAction == WALKING && running && !startedToRun){
+			setWalkingAnimation(30);
+			startedToRun = true;
+		}
+		else if(currentAction == WALKING && !running && startedToRun){
+			setWalkingAnimation(50);
+			startedToRun = false;
+		}
+		//Change pace before moving
+		else if(currentAction != WALKING && running) setWalkingAnimation(30);
+		else if(currentAction != WALKING) setWalkingAnimation(50);
+	}
+	
+	private void setHitAnimation(){
+		currentAction = HIT;
+		animation.setFrames(sprites.get(HIT));
+		animation.setDelay(700);
+	}
+	
+	public void setRunning(boolean running) {
+		this.running = running;
+	}
+	
 	// Drawing
 	public void draw(Graphics2D g){
 
@@ -228,8 +300,8 @@ public class Player extends MapObject{
 
 		// When player took damage
 		if(flinching) {
-			long elapsed = (System.nanoTime() - flinchTime) / 1000000;
-			if (elapsed / 100 % 2 == 0) return;
+			long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
+			if (elapsed / 100 % 5 == 0) return;
 		}
 
 		// When player is facing right

@@ -13,20 +13,16 @@ import java.util.ArrayList;
 public class Slime extends Enemy {
 
     public Slime(TileMap tm){
-        super(tm,"/Sprites/slime.png",  new int[] {3, 2});
-        
-        animation.setFrames(sprites.get(WALKING));
-        animation.setDelay(500);
-
+        super(tm,"/Sprites/slime.png",  new int[] {3, 1});
+        setWalkingAnimation();
         right = true;
         facingRight = true;
-
     }
     
     @Override
     protected void initializeStats() {
-        moveSpeed = 0.01;
-        maxSpeed = 0.3;
+        moveSpeed = 0.1;
+        maxSpeed = 1;
         fallSpeed = 0.2;
         maxFallSpeed = 10.0;
     
@@ -39,9 +35,7 @@ public class Slime extends Enemy {
         damage = 1;
     }
     
-    private void getNextPosition(){
-
-        // Accelarating enemy move speed after pressing and holding left/right key
+    protected void getNextPosition(){
         if (left) {
             dx -= moveSpeed;
             if(dx < -maxSpeed){
@@ -54,14 +48,10 @@ public class Slime extends Enemy {
                 dx = maxSpeed;
             }
         }
-
+        
         if(falling) {
             dy += fallSpeed;
-
         }
-
-
-
     }
 
     public void update(){
@@ -75,15 +65,12 @@ public class Slime extends Enemy {
         if(flinching) {
             long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
             if(currentAction != HIT) {
-                currentAction = HIT;
-                animation.setFrames(sprites.get(HIT));
-                animation.setDelay(100);
+                setHitAnimation();
             }
-            if(elapsed > 200){
+            if(elapsed > 400){
                 flinching = false;
-                currentAction = WALKING;
-                animation.setFrames(sprites.get(WALKING));
-                animation.setDelay(500);
+                setAttackedOnce(false);
+                setWalkingAnimation();
             }
         }
 
@@ -93,6 +80,7 @@ public class Slime extends Enemy {
             left = true;
             facingRight = false;
         }
+        
         else if(left && dx == 0) {
             right = true;
             left = false;
@@ -101,10 +89,21 @@ public class Slime extends Enemy {
 
         // Update animation
         animation.update();
-
-
+        
     }
-
+    
+    private void setWalkingAnimation(){
+        currentAction = WALKING;
+        animation.setFrames(sprites.get(WALKING));
+        animation.setDelay(500);
+    }
+    
+    private void setHitAnimation(){
+        currentAction = HIT;
+        animation.setFrames(sprites.get(HIT));
+        animation.setDelay(300);
+    }
+    
     public void draw(Graphics2D g){
 
         //if(notOnScreen()) return;

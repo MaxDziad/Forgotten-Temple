@@ -17,9 +17,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	// Game thread
 	private Thread thread;
-	private boolean running;
-	private int FPS = 60;
-	private long targetTime = 1000 / FPS;
+	private boolean isPaused;
+	private static final int FPS = 60;
+	private static final long targetTime = 1000 / FPS;
 	
 	// Image and Graphics
 	private BufferedImage image;
@@ -30,9 +30,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 
 	// Constructor
 	public GamePanel() {
-		super();
-		setPreferredSize(
-			new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
+		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		setFocusable(true);
 		requestFocus();
 	}
@@ -48,41 +46,34 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	}
 
 	// Initialize game
-	private void init() {
+	private void initialize() {
 		
-		image = new BufferedImage(
-			WIDTH, HEIGHT,
-			BufferedImage.TYPE_INT_RGB
-		);
+		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		g = (Graphics2D) image.getGraphics();
 		
-		running = true;
+		isPaused = false;
 		
 		gsm = new GameStateManager();
 		
 	}
-
-	// Game plays here
+	
 	public void run() {
-		
-		init();
-		
-		long start;
-		long elapsed;
-		long wait;
-		
-		// game loop
-		while(running) {
+		initialize();
+		gameLoop();
+	}
+	
+	public void gameLoop(){
+		while(!isPaused) {
 			
-			start = System.nanoTime();
+			long start = System.nanoTime();
 			
 			update();
 			draw();
 			drawToScreen();
 			
-			elapsed = System.nanoTime() - start;
+			long elapsed = System.nanoTime() - start;
 			
-			wait = targetTime - elapsed / 1000000L;
+			long wait = targetTime - elapsed / 1000000L;
 			if(wait < 0) wait = 5;
 			
 			try {
@@ -91,9 +82,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			catch(Exception e) {
 				e.printStackTrace();
 			}
-			
 		}
-		
 	}
 
 	// Calculate objects
