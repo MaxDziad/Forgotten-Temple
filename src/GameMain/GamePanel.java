@@ -7,8 +7,13 @@ import java.awt.event.*;
 import javax.swing.JPanel;
 
 import GameState.GameStateManager;
+import org.w3c.dom.css.RGBColor;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
+	
+	// Pause Background parameters
+	private static final Color PAUSE_COLOR = new Color(0,0,0,0.2f);
+	private boolean isPauseMenuColoredOnce;
 	
 	// Dimensions
 	public static final int WIDTH = 1024;
@@ -53,13 +58,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		
 		isPaused = false;
 		
+		
 		gsm = new GameStateManager();
 		
 	}
 	
 	public void run() {
 		initialize();
-		gameLoop();
+		while(true) {
+			gameLoop();
+		}
 	}
 	
 	public void gameLoop(){
@@ -83,6 +91,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 				e.printStackTrace();
 			}
 		}
+		
+		
+		
+		while(isPaused){
+			long start = System.nanoTime();
+			
+			playPauseMenu();
+			
+			long elapsed = System.nanoTime() - start;
+			
+			long wait = targetTime - elapsed / 1000000L;
+			if(wait < 0) wait = 5;
+			
+			try {
+				Thread.sleep(wait);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		isPauseMenuColoredOnce = false;
 	}
 
 	// Calculate objects
@@ -103,16 +133,34 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			null);
 		g2.dispose();
 	}
+	
+	private void playPauseMenu(){
+		if(!isPauseMenuColoredOnce) {
+			Graphics g2 = getGraphics();
+			g2.setColor(PAUSE_COLOR);
+			g2.fillRect(0, 0, WIDTH, HEIGHT);
+			g2.dispose();
+			isPauseMenuColoredOnce = true;
+		}
+	}
 
 	// Key listeners
 	public void keyTyped(KeyEvent key) {}
 	public void keyPressed(KeyEvent key) {
-		gsm.keyPressed(key.getKeyCode());
-	}
-	public void keyReleased(KeyEvent key) {
-		gsm.keyReleased(key.getKeyCode());
+		int k = key.getKeyCode();
+		if(k == KeyEvent.VK_ESCAPE){
+			isPaused = !isPaused;
+		}
+		if(!isPaused) {
+			gsm.keyPressed(k);
+		}
 	}
 	
+	public void keyReleased(KeyEvent key) {
+		if(!isPaused) {
+			gsm.keyReleased(key.getKeyCode());
+		}
+	}
 }
 
 
