@@ -19,8 +19,8 @@ public class HUD {
     
     public void initializeHUDImage(){
         try{
-            image = ImageIO.read(getClass().getResourceAsStream(" "));
-            font = new Font("Arial",Font.PLAIN,16);
+            image = ImageIO.read(getClass().getResourceAsStream("/Background/hud.png"));
+            font = new Font("Arial",Font.PLAIN,30);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -31,6 +31,6 @@ public class HUD {
         g.drawImage(image, 0, 20, null);
         g.setFont(font);
         g.setColor(Color.BLUE);
-        g.drawString(player.getCurrentHealth() +"/" + player.getMaxHealth(),30,25);
+        g.drawString(player.getCurrentHealth() +"/" + player.getMaxHealth(),60,50);
     }
 }

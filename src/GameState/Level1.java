@@ -113,6 +113,7 @@ public class Level1 extends GameState{
 		if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(true);
 		if(k == KeyEvent.VK_E) player.attack();
 		if(k == KeyEvent.VK_SHIFT) player.setRunning(true);
+
 	}
 	
 	@Override
