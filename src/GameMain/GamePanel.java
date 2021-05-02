@@ -6,14 +6,13 @@ import java.awt.event.*;
 
 import javax.swing.JPanel;
 
+import GameState.GameState;
 import GameState.GameStateManager;
-import org.w3c.dom.css.RGBColor;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
-	// Pause Background parameters
-	private static final Color PAUSE_COLOR = new Color(0,0,0,0.2f);
-	private boolean isPauseMenuColoredOnce;
+	// To save paused progress
+	private int pausedState;
 	
 	// Dimensions
 	public static final int WIDTH = 1024;
@@ -57,21 +56,17 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		g = (Graphics2D) image.getGraphics();
 		
 		isPaused = false;
-		
-		
 		gsm = new GameStateManager();
 		
 	}
 	
 	public void run() {
 		initialize();
-		while(true) {
-			gameLoop();
-		}
+		gameLoop();
 	}
 	
 	public void gameLoop(){
-		while(!isPaused) {
+		while(true) {
 			
 			long start = System.nanoTime();
 			
@@ -91,28 +86,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
-		while(isPaused){
-			long start = System.nanoTime();
-			
-			playPauseMenu();
-			
-			long elapsed = System.nanoTime() - start;
-			
-			long wait = targetTime - elapsed / 1000000L;
-			if(wait < 0) wait = 5;
-			
-			try {
-				Thread.sleep(wait);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
-		isPauseMenuColoredOnce = false;
 	}
 
 	// Calculate objects
@@ -135,32 +108,24 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	}
 	
 	private void playPauseMenu(){
-		if(!isPauseMenuColoredOnce) {
-			Graphics g2 = getGraphics();
-			g2.setColor(PAUSE_COLOR);
-			g2.fillRect(0, 0, WIDTH, HEIGHT);
-			g2.dispose();
-			isPauseMenuColoredOnce = true;
-		}
+		pausedState = gsm.getCurrentState();
+		gsm.createPausedState();
+		gsm.setState(GameStateManager.PAUSE);
 	}
 
 	// Key listeners
 	public void keyTyped(KeyEvent key) {}
+	
 	public void keyPressed(KeyEvent key) {
 		int k = key.getKeyCode();
-		if(k == KeyEvent.VK_ESCAPE){
-			isPaused = !isPaused;
-		}
-		if(!isPaused) {
-			gsm.keyPressed(k);
-		}
+		if(k == KeyEvent.VK_ESCAPE && gsm.isCurrentStateDynamic()) playPauseMenu();
+		gsm.keyPressed(k);
 	}
 	
 	public void keyReleased(KeyEvent key) {
-		if(!isPaused) {
-			gsm.keyReleased(key.getKeyCode());
-		}
+		if(!isPaused) gsm.keyReleased(key.getKeyCode());
 	}
+	
 }
 
 

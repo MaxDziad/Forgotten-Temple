@@ -10,6 +10,7 @@ public class MenuState extends GameState {
 	private Background bg;
 	
 	private int currentChoice = 0;
+	
 	private String[] options = {
 		"New Game",
 		"Controls",
@@ -57,7 +58,7 @@ public class MenuState extends GameState {
 		g.drawString("Super Student Bros", 20, 100);
 	}
 	
-	public void drawMenuOptions(Graphics2D g){
+	private void drawMenuOptions(Graphics2D g){
 		g.setFont(font);
 		for(int i = 0; i < options.length; i++) {
 			if(i == currentChoice) {
@@ -88,14 +89,14 @@ public class MenuState extends GameState {
 		}
 	}
 	
-	public void scrollUp(){
+	private void scrollUp(){
 		currentChoice--;
 		if(currentChoice == -1) {
 			currentChoice = options.length - 1;
 		}
 	}
 	
-	public void scrollDown(){
+	private void scrollDown(){
 		currentChoice++;
 		if(currentChoice == options.length) {
 			currentChoice = 0;
