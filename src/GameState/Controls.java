@@ -15,8 +15,6 @@ public class Controls extends GameState  {
 
     private Background bg;
     private BufferedImage imageA,imageD,imageDown,imageE,imageS,imageShift,imageUp,imageW;
-    private TileMap tm;
-    private MapObject mapObject;
 
     private String[] options = {
             "LEFT",
