@@ -95,7 +95,7 @@ public abstract class MapObject {
     
     protected void initializeStats() {}
     
-    private void loadSprites(String spritesPath, int[] numberOfFrames){
+    public void loadSprites(String spritesPath, int[] numberOfFrames){
         try{
             // Load sprite
             BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(spritesPath));

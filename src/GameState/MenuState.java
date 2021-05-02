@@ -12,7 +12,7 @@ public class MenuState extends GameState {
 	private int currentChoice = 0;
 	private String[] options = {
 		"New Game",
-		"Settings",
+		"Controls",
 		"Quit"
 	};
 	
@@ -81,7 +81,7 @@ public class MenuState extends GameState {
 			gsm.setState(GameStateManager.LEVEL1);
 		}
 		if(currentChoice == 1) {
-			// settings
+			gsm.setState(GameStateManager.CONTROLS);
 		}
 		if(currentChoice == 2) {
 			System.exit(0);

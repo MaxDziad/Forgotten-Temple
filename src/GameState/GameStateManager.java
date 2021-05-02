@@ -9,6 +9,7 @@ public class GameStateManager {
 	
 	public static final int MENU = 0;
 	public static final int LEVEL1 = 1;
+	public static final int CONTROLS = 2;
 	
 	public GameStateManager() {
 		initialize();
@@ -19,6 +20,7 @@ public class GameStateManager {
 		currentState = MENU;
 		gameStates.add(new MenuState(this));
 		gameStates.add(new Level1(this));
+		gameStates.add(new Controls(this));
 	}
 	
 	public void setState(int state) {
