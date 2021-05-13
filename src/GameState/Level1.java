@@ -31,19 +31,19 @@ public class Level1 extends GameState{
 	public void initialize() {
 		tileMap = new TileMap(32);
 		tileMap.loadTiles("/TileSets/level1.png");            //load TileSet
-		tileMap.loadMap("/Maps/Level1.map");                  //load Map
-		tileMap.setPosition(200,200);
+		tileMap.loadMap("/Maps/level1.map");                  //load Map
+		tileMap.setPosition(0,1000);
 		tileMap.setTween(0.07);
 
 		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
-		player.setPosition(300,300);
+		player.setPosition(150,650);
 		
 		hud = new HUD(player);
 
 		enemies = new ArrayList<Enemy>();
-		populateEnemies();
+	//	populateEnemies();
 	}
 	
 	public void populateEnemies(){

@@ -94,7 +94,7 @@ public class TileMap {
 			ymin = GamePanel.HEIGHT - height;
 			ymax = 0;
 			
-			String delims = "\\s+";
+			String delims = ",";
 			for(int row = 0; row < numRows; row++){
 				String line = br.readLine();
 				String[] tokens = line.split(delims);
@@ -177,7 +177,7 @@ public class TileMap {
 				int row_columns = map[row][col];
 				int r = row_columns / numTilesAcross;
 				int c = row_columns % numTilesAcross;
-				g.drawImage(tiles[r][c].getImage(), (int)x + col * tileSize,
+				g.drawImage(tiles[r][c-1].getImage(), (int)x + col * tileSize,
 					(int)y + row * tileSize, null);
 				
 			}
