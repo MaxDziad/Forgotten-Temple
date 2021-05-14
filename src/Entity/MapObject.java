@@ -39,7 +39,7 @@ public abstract class MapObject {
     protected double xtemp;    // temporary x
     protected double ytemp;    // temporary y
 
-    // 4-point detectors for collision detection (each for every corner) + 2 on the left and right
+    // 4-point detectors for collision detection (each for every corner)
     protected boolean topLeft;
     protected boolean topRight;
     protected boolean bottomLeft;
@@ -92,7 +92,7 @@ public abstract class MapObject {
     
     protected void initializeStats() {}
     
-    public void loadSprites(String spritesPath, int[] numberOfFrames){
+    protected void loadSprites(String spritesPath, int[] numberOfFrames){
         try{
             // Load sprite
             BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(spritesPath));
@@ -130,7 +130,7 @@ public abstract class MapObject {
     
     
     public Rectangle getRectangle(){
-        return new Rectangle((int)x - cwidth,(int)y - cheight, cwidth, cheight);
+        return new Rectangle((int)x - cwidth/2,(int)y - cheight/2, cwidth, cheight);
     }
 
     // Finds corners of blocking tiles

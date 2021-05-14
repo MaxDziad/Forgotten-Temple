@@ -7,7 +7,7 @@ import java.awt.*;
 public class Slime extends Enemy {
 
     public Slime(TileMap tm){
-        super(tm,"/Sprites/slime.png",  new int[] {3, 1});
+        super(tm,"/Sprites/slime.png",  new int[] {3, 2});
         setWalkingAnimation();
         right = true;
         facingRight = true;
@@ -101,7 +101,7 @@ public class Slime extends Enemy {
     
     public void draw(Graphics2D g){
 
-        //if(notOnScreen()) return;
+        if(notOnScreen()) return;
 
         setMapPosition();
         super.draw(g);

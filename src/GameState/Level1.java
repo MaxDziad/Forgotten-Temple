@@ -1,5 +1,6 @@
 package GameState;
 
+import Enemies.Golem;
 import Enemies.Slime;
 import Entity.CutScene;
 import Enemies.Enemy;
@@ -27,7 +28,7 @@ public class Level1 extends GameState{
 	private boolean bossFightStarted;
 	private boolean bossFightFinished;
 	
-	private Slime boss;
+	private Enemy boss;
 
 	private ArrayList<Enemy> enemies;
 
@@ -58,14 +59,14 @@ public class Level1 extends GameState{
 		lockCameraOnPlayer = true;
 		bossFightStarted = false;
 		bossFightFinished = false;
-		boss = new Slime(tileMap);
+		boss = new Golem(tileMap);
 		
 		enemies = new ArrayList<Enemy>();
 	//	populateEnemies();
 	}
 	
 	public void spawnBoss(){
-		boss.setPosition(4564, 645);
+		boss.setPosition(4564, 610);
 		enemies.add(boss);
 	}
 	
