@@ -1,14 +1,8 @@
 package Enemies;
 
-import Entity.Animation;
-import Entity.Enemy;
 import TileMap.TileMap;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public class Slime extends Enemy {
 
@@ -53,15 +47,8 @@ public class Slime extends Enemy {
             dy += fallSpeed;
         }
     }
-
-    public void update(){
-
-        // Update position
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
-
-        // Check flinching
+    
+    private void checkFlinching(){
         if(flinching) {
             long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
             if(currentAction != HIT) {
@@ -73,23 +60,31 @@ public class Slime extends Enemy {
                 setWalkingAnimation();
             }
         }
-
+    }
+    
+    private void checkPosition(){
         // If it hits a wall, go other direction
-        if(right && dx == 0){
+        if((right && dx == 0) || !bottomRight){
             right = false;
             left = true;
             facingRight = false;
         }
-        
-        else if(left && dx == 0) {
+    
+        else if((left && dx == 0) || !bottomLeft) {
             right = true;
             left = false;
             facingRight = true;
         }
+    }
 
-        // Update animation
-        animation.update();
+    public void update(){
         
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
+        checkFlinching();
+        checkPosition();
+        animation.update();
     }
     
     private void setWalkingAnimation(){

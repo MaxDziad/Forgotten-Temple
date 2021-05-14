@@ -1,8 +1,9 @@
-package Entity;
+package Enemies;
 
+import Entity.MapObject;
 import TileMap.TileMap;
 
-public abstract class Enemy extends MapObject{
+public abstract class Enemy extends MapObject {
 
     protected int health;
     protected int maxHealth;

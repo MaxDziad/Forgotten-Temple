@@ -32,5 +32,8 @@ public class HUD {
         g.setFont(font);
         g.setColor(Color.BLUE);
         g.drawString(player.getCurrentHealth() +"/" + player.getMaxHealth(),60,50);
+        //For testing
+        g.drawString("x: " + player.getX(),60,80);
+        g.drawString("y: " + player.getY(),60,100);
     }
 }

@@ -1,5 +1,6 @@
 package Entity;
 
+import Enemies.Enemy;
 import TileMap.TileMap;
 
 import java.awt.*;

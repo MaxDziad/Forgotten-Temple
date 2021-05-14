@@ -1,7 +1,8 @@
 package GameState;
 
 import Enemies.Slime;
-import Entity.Enemy;
+import Entity.CutScene;
+import Enemies.Enemy;
 import Entity.HUD;
 import Entity.Player;
 import GameMain.GamePanel;
@@ -16,8 +17,17 @@ public class Level1 extends GameState{
 	
 	private TileMap tileMap;
 	private Background bg;
-
+	
+	private CutScene cutScene;
 	private Player player;
+	
+	//Cutscene flags
+	private boolean lockKeyboard;
+	private boolean lockCameraOnPlayer;
+	private boolean bossFightStarted;
+	private boolean bossFightFinished;
+	
+	private Slime boss;
 
 	private ArrayList<Enemy> enemies;
 
@@ -38,12 +48,25 @@ public class Level1 extends GameState{
 		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
-		player.setPosition(150,650);
+	//	player.setPosition(150,650);
+		player.setPosition(4200,600);
 		
 		hud = new HUD(player);
-
+		
+		cutScene = new CutScene(player, tileMap);
+		lockKeyboard = false;
+		lockCameraOnPlayer = true;
+		bossFightStarted = false;
+		bossFightFinished = false;
+		boss = new Slime(tileMap);
+		
 		enemies = new ArrayList<Enemy>();
 	//	populateEnemies();
+	}
+	
+	public void spawnBoss(){
+		boss.setPosition(4564, 645);
+		enemies.add(boss);
 	}
 	
 	public void populateEnemies(){
@@ -53,20 +76,50 @@ public class Level1 extends GameState{
 		enemies.add(s);
 	}
 	
+	private void checkForCutScenes(){
+		if(player.getX() >= 4310 && !bossFightStarted){
+			changeCamera();
+			bossFightStarted = true;
+			cutScene.startFirstBoss();
+			spawnBoss();
+		}
+		
+		if(boss.isDead() && !bossFightFinished){
+			bossFightFinished = true;
+			lockUnlockKeyboard();
+			cutScene.finishBossFight();
+		}
+	}
+	
 	@Override
 	public void update() {
+		checkForCutScenes();
 		player.update();
 		centerCamera();
 		moveBackground();
 		checkPlayerInteractionWithEnemies();
 		updateAllEnemies();
+		if(bossFightFinished) cutScene.update();
+	}
+	
+	public void lockUnlockKeyboard(){
+		lockKeyboard = !lockKeyboard;
+	}
+	
+	public void changeCamera(){
+		lockCameraOnPlayer = !lockCameraOnPlayer;
 	}
 	
 	public void centerCamera(){
-		tileMap.setPosition(
-			GamePanel.WIDTH / 2f - player.getX(),
-			GamePanel.HEIGHT / 2f - player.getY()
-		);
+		if(lockCameraOnPlayer) {
+			tileMap.setPosition(
+				GamePanel.WIDTH / 2f - player.getX(),
+				GamePanel.HEIGHT / 2f - player.getY()
+			);
+		}
+		else{
+			tileMap.setPositionHard(-3800, -64);
+		}
 	}
 	
 	public void moveBackground(){
@@ -107,20 +160,24 @@ public class Level1 extends GameState{
 	
 	@Override
 	public void keyPressed(int k) {
-		if(k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT) player.setLeft(true);
-		if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(true);
-		if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(true);
-		if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(true);
-		if(k == KeyEvent.VK_E) player.attack();
-		if(k == KeyEvent.VK_SHIFT) player.setRunning(true);
+		if(!lockKeyboard) {
+			if(k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT) player.setLeft(true);
+			if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(true);
+			if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(true);
+			if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(true);
+			if(k == KeyEvent.VK_E) player.attack();
+			if(k == KeyEvent.VK_SHIFT) player.setRunning(true);
+		}
 	}
 	
 	@Override
 	public void keyReleased(int k) {
-		if(k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT) player.setLeft(false);
-		if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(false);
-		if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(false);
-		if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(false);
-		if(k == KeyEvent.VK_SHIFT) player.setRunning(false);
+		if(!lockKeyboard) {
+			if(k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT) player.setLeft(false);
+			if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(false);
+			if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(false);
+			if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(false);
+			if(k == KeyEvent.VK_SHIFT) player.setRunning(false);
+		}
 	}
 }

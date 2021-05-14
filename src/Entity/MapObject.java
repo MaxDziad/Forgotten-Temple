@@ -44,9 +44,6 @@ public abstract class MapObject {
     protected boolean topRight;
     protected boolean bottomLeft;
     protected boolean bottomRight;
-    // Additional, work in progress
-    protected boolean leftCollision;
-    protected boolean rightCollision;
     
     // movement
     protected boolean left;
@@ -153,18 +150,6 @@ public abstract class MapObject {
         bottomLeft = bl == Tile.BLOCKED;
         bottomRight = br == Tile.BLOCKED;
         
-//        FOR EVENTUAL BUG
-//        if(height == 64) {
-//            // Because cheight of 64 pixel is 55
-//            int l = tileMap.getType(topTile + 8, leftTile);
-//            int r = tileMap.getType(topTile + 8, rightTile);
-//            leftCollision = l == Tile.BLOCKED;
-//            rightCollision = r == Tile.BLOCKED;
-//        }
-//        else{
-//            leftCollision = false;
-//            rightCollision = false;
-//        }
     }
     
     // Check whether or not we have run into a blocked tile or a normal tile
@@ -216,7 +201,7 @@ public abstract class MapObject {
     
     private void checkCollisionWithLeftWall(){
         if(dx < 0){
-            if(topLeft || bottomLeft || leftCollision){
+            if(topLeft || bottomLeft){
                 dx = 0;
                 xtemp = currCol * tileSize + cwidth / 2;
             }
@@ -228,7 +213,7 @@ public abstract class MapObject {
     
     private void checkCollisionWithRightWall(){
         if(dx > 0){
-            if(topRight || bottomRight || rightCollision){
+            if(topRight || bottomRight){
                 dx = 0;
                 xtemp = (currCol + 1) * tileSize - cwidth / 2;
             }

@@ -94,7 +94,7 @@ public class TileMap {
 			ymin = GamePanel.HEIGHT - height;
 			ymax = 0;
 			
-			String delims = ",";
+			String delims = "\\s+";
 			for(int row = 0; row < numRows; row++){
 				String line = br.readLine();
 				String[] tokens = line.split(delims);
@@ -121,14 +121,6 @@ public class TileMap {
 		return tileSize;
 	}
 	
-	public int getWidth() {
-		return width;
-	}
-	
-	public int getHeight() {
-		return height;
-	}
-	
 	// To determine tile type and image
 	public int getType(int row, int col){
 		int row_column = map[row][col];
@@ -153,12 +145,24 @@ public class TileMap {
 		rowOffset = (int)-this.y / tileSize;
 	}
 	
+	public void setPositionHard(double x, double y){
+		this.x = x;
+		this.y = y;
+		fixBounds();
+		columnOffset = (int)-this.x / tileSize;
+		rowOffset = (int)-this.y / tileSize;
+	}
+	
 	// So the camera won't be showing space which is out of map
 	private void fixBounds(){
 		if(x < xmin) x = xmin;
 		if(y < ymin) y = ymin;
 		if(x > xmax) x = xmax;
 		if(y > ymax) y = ymax;
+	}
+	
+	public void setTileOnMap(int row, int col, int tileNumber){
+		map[row][col] = tileNumber;
 	}
 	
 	public void draw(Graphics2D g){
@@ -177,7 +181,7 @@ public class TileMap {
 				int row_columns = map[row][col];
 				int r = row_columns / numTilesAcross;
 				int c = row_columns % numTilesAcross;
-				g.drawImage(tiles[r][c-1].getImage(), (int)x + col * tileSize,
+				g.drawImage(tiles[r][c].getImage(), (int)x + col * tileSize,
 					(int)y + row * tileSize, null);
 				
 			}
