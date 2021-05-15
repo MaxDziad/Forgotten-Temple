@@ -6,6 +6,8 @@ import TileMap.Tile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -129,7 +131,7 @@ public abstract class MapObject {
     }
     
     
-    public Rectangle getRectangle(){
+    protected Rectangle getRectangle(){
         return new Rectangle((int)x - cwidth/2,(int)y - cheight/2, cwidth, cheight);
     }
 
@@ -238,18 +240,21 @@ public abstract class MapObject {
                 y + ymap + height < 0 ||
                 y + ymap - height > GamePanel.HEIGHT;
     }
-
+    
+    protected BufferedImage flipImageHorizontally(BufferedImage image){
+        AffineTransform tx = AffineTransform.getScaleInstance(-1, 1);
+        tx.translate(-image.getWidth(null), 0);
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        image = op.filter(image, null);
+        return image;
+    }
+    
     public void draw(Graphics2D g){
-        // When player/enemy is facing right
-        if(facingRight){
-            g.drawImage(animation.getImage(), (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
+        BufferedImage image = animation.getImage();
+        if(!facingRight){
+            image = flipImageHorizontally(image);
         }
-
-        // When player/enemy is facing left
-        else{
-            g.drawImage(animation.getImage(), (int)(x + xmap - width / 2 + width),
-                    (int)(y + ymap - height / 2), -width, height, null);
-        }
+        g.drawImage(image, (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
     }
 
     // Getters

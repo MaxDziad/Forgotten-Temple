@@ -13,17 +13,19 @@ public class Golem extends Enemy{
 	private Player player;
 	private boolean isAttacking;
 	
-	public Golem(TileMap tm) {
+	//Neccessary, because golem's sprites have different height
+	private int currentHeight;
+	
+	public Golem(TileMap tm, Player player) {
 		super(tm, "/Sprites/Golem.png", new int[] {1, 0, 0, 0, 2});
-		setWalkingAnimation();
-		left = true;
-		facingRight = false;
+		this.player = player;
+		currentHeight = 610;
 	}
 	
 	@Override
 	protected void loadSprites(String spritesPath, int[] numberOfFrames) {
 		try{
-			// Load sprite
+			// Load sprites
 			BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(spritesPath));
 			
 			int numberOfRows = spritesheet.getHeight() / height;
@@ -36,7 +38,11 @@ public class Golem extends Enemy{
 				// Every column
 				for(int j = 0; j < numberOfFrames[i]; j++){
 					if(i == 4){
-						bi[j] = spritesheet.getSubimage(j*width*3, i*height, width*3, height+29);
+						if(j == 1){
+							bi[j] = spritesheet.getSubimage(162, 485, 200, 159);
+							continue;
+						}
+						bi[j] = spritesheet.getSubimage(j*162, 485, 162, 159);
 						continue;
 					}
 					bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
@@ -59,55 +65,76 @@ public class Golem extends Enemy{
 		
 		width = 123;
 		height = 121;
-		cwidth = 115;
-		cheight = 120;
 		
 		health = maxHealth = 600;
 		damage = 1;
 	}
 	
 	protected void getNextPosition(){
-//		if (left) {
-//			dx -= moveSpeed;
-//			if(dx < -maxSpeed){
-//				dx = -maxSpeed;
-//			}
-//		}
-//		else if(right){
-//			dx += moveSpeed;
-//			if(dx > maxSpeed){
-//				dx = maxSpeed;
-//			}
-//		}
+		if(isAttacking) dx = 0;
+		else{
+			if(left) {
+				dx -= moveSpeed;
+				if(dx < -maxSpeed) {
+					dx = -maxSpeed;
+				}
+			}
+			else if(right) {
+				dx += moveSpeed;
+				if(dx > maxSpeed) {
+					dx = maxSpeed;
+				}
+			}
+		}
+	}
+	
+	private void followPlayer(){
+		if(player.getX() > getX()){
+			right = true;
+			left = false;
+		}
+		if(player.getX() <= getX()){
+			right = false;
+			left = true;
+		}
+	}
+	
+	private void attack(){
+		isAttacking = true;
+	}
+	
+	private void attackIfPlayerInRange(){
+		if(Math.abs(getX() - player.getX()) <= 110 && Math.abs(getY() - player.getY()) <= 64)
+			attack();
+	}
+	
+	private void horizontalAlwaysTheSame(){
+		y = currentHeight;
+		ytemp = currentHeight;
 	}
 	
 	public void update(){
+		horizontalAlwaysTheSame();
 		getNextPosition();
 		checkTileMapCollision();
 		setPosition(xtemp,ytemp);
-		animation.update();
+		followPlayer();
+		attackIfPlayerInRange();
 		
 		// check attack has stopped
 		if(currentAction == ATTACKING) {
 			if(animation.isPlayedOnce()) isAttacking = false;
 		}
 		
-		if(flinching){
-			long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
-			if (elapsed > 2000){
-				flinching = false;
-			}
-		}
-		
 		if(isAttacking){
 			if(currentAction != ATTACKING){
-				setAttackAnimation(5000);
+				setAttackAnimation(3000);
 			}
 		}
 		
-		else setWalkingAnimation();
-
+		else setWalkingAnimation(-1);
 		
+		changeCBoxShape();
 		animation.update();
 		
 		// set direction
@@ -117,26 +144,69 @@ public class Golem extends Enemy{
 		}
 	}
 	
-	private void setWalkingAnimation(){
+	private void setWalkingAnimation(int delay){
 		currentAction = WALKING;
 		animation.setFrames(sprites.get(WALKING));
-		animation.setDelay(800);
+		animation.setDelay(delay);
+		currentHeight = 610;
 		cwidth = 120;
+		cheight = 120;
 	}
 	
 	private void setAttackAnimation(int delay){
 		currentAction = ATTACKING;
 		animation.setFrames(sprites.get(ATTACKING));
 		animation.setDelay(delay);
-		cwidth = 160;
-		cheight =
+		animation.setCurrentFrame(0);
+		currentHeight = 575;
+	}
+	
+	protected Rectangle getRectangle(){
+		if(currentAction == WALKING) return new Rectangle((int)x - cwidth/2,(int)y - cheight/2, cwidth, cheight);
+		else{
+			if(!facingRight){
+				if(animation.getCurrentFrame() == 0) return new Rectangle((int)x + 20 - cwidth/2,(int)y - cheight/2, cwidth - 6, cheight);
+				return new Rectangle((int)x - (cwidth+40)/2,(int)y - 15 + cheight/2, cwidth, cheight);
+			}
+			else{
+				if(animation.getCurrentFrame() == 0) return new Rectangle((int)x - 4 - cwidth/2,(int)y - cheight/2, cwidth, cheight);
+				return new Rectangle((int)x + 40 - cwidth/2,(int)y - 15 + cheight/2, cwidth, cheight);
+			}
+		}
+	}
+	
+	private void changeCBoxShape(){
+		if(currentAction == ATTACKING && animation.getCurrentFrame() == 0){
+			cwidth = 90;
+			cheight = 120;
+		}
+		if(currentAction == ATTACKING && animation.getCurrentFrame() == 1){
+			cwidth = 162;
+			cheight = 88;
+		}
 	}
 	
 	
 	public void draw(Graphics2D g){
-		
 		setMapPosition();
-		super.draw(g);
+		BufferedImage image = animation.getImage();
+		if(!facingRight){
+			image = flipImageHorizontally(image);
+		}
+		if(currentAction == ATTACKING && animation.getCurrentFrame() == 1){
+			if(facingRight){
+				g.drawImage(image, (int)(x - 15 + xmap - width / 2), (int)(y + ymap - height / 2), null);
+			}
+			else{
+				g.drawImage(image, (int)(x - 50 + xmap - width / 2), (int)(y + ymap - height / 2), null);
+			}
+			return;
+		}
+		else if(currentAction == ATTACKING && animation.getCurrentFrame() == 0 && facingRight){
+			g.drawImage(image, (int)(x - 30 + xmap - width / 2), (int)(y + ymap - height / 2), null);
+			return;
+		}
+		g.drawImage(image, (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
 	}
 }
 

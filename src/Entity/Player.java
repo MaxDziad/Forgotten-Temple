@@ -284,12 +284,6 @@ public class Player extends MapObject{
 		else if(currentAction != WALKING) setWalkingAnimation(50);
 	}
 	
-	private void setHitAnimation(){
-		currentAction = HIT;
-		animation.setFrames(sprites.get(HIT));
-		animation.setDelay(700);
-	}
-	
 	public void setRunning(boolean running) {
 		this.running = running;
 	}

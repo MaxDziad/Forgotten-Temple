@@ -59,7 +59,7 @@ public class Level1 extends GameState{
 		lockCameraOnPlayer = true;
 		bossFightStarted = false;
 		bossFightFinished = false;
-		boss = new Golem(tileMap);
+		boss = new Golem(tileMap, player);
 		
 		enemies = new ArrayList<Enemy>();
 	//	populateEnemies();

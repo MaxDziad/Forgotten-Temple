@@ -24,7 +24,6 @@ public abstract class Enemy extends MapObject {
     
     public Enemy(TileMap tm, String spritesPath, int[] numberOfFrames) {
         super(tm, spritesPath, numberOfFrames);
-
     }
 
     public boolean isDead(){
