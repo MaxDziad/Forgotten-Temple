@@ -11,8 +11,8 @@ public abstract class GameState {
 	public abstract void keyReleased(int k);
 	
 	public GameState(GameStateManager gsm){
-		this.gsm = gsm;
 		initialize();
+		this.gsm = gsm;
 	}
 	
 }

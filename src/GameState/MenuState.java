@@ -60,7 +60,7 @@ public class MenuState extends ChoosableMenu {
 	@Override
 	protected void select() {
 		if(currentChoice == 0) {
-			gsm.setState(GameStateManager.LEVEL1);
+			gsm.restartLevel1();
 		}
 		if(currentChoice == 1) {
 			gsm.setState(GameStateManager.CONTROLS);

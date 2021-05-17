@@ -56,7 +56,6 @@ public class Slime extends Enemy {
             }
             if(elapsed > 400){
                 flinching = false;
-                setAttackedOnce(false);
                 setWalkingAnimation();
             }
         }

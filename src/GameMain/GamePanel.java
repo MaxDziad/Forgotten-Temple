@@ -120,20 +120,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		gsm.setState(GameStateManager.PAUSE);
 	}
 
-	/*public void checkForGameOver(){
-		if(player.getCurrentHealth() == 0 && gsm.isCurrentStateDynamic()){
-			isGameOver = true;
-			playGameOver();
-		}
-	}
-
-	public void playGameOver(){
-		gameOver = gsm.getCurrentState();
-		gsm.createGameOverState();
-		gsm.setState(GameStateManager.GAMEOVER);
-	}
-*/
-
 	// Key listeners
 	public void keyTyped(KeyEvent key) {}
 	
@@ -145,7 +131,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	public void keyReleased(KeyEvent key) {
 		if(!isPaused) gsm.keyReleased(key.getKeyCode());
-		if(!isGameOver) gsm.keyReleased(key.getKeyCode());
 	}
 	
 }

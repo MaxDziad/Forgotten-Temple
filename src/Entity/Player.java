@@ -16,6 +16,7 @@ public class Player extends MapObject{
 	private long flinchTimer;
 	
 	// Whip attacks
+	private boolean hitOnce;
 	private boolean isAttacking;
 	private int whipDamage;
 	private int whipRange;
@@ -54,6 +55,7 @@ public class Player extends MapObject{
 		
 		whipDamage = 20;
 		whipRange = 80;
+		hitOnce = false;
 		
 		running = false;
 		startedToRun = false;
@@ -91,32 +93,45 @@ public class Player extends MapObject{
 				}
 				takeHit(enemy.getDamage());
 			}
-			if(isAttacking && !enemy.wasAttackedOnce()) {
-				if(isEnemyAttackedFromLeft(enemy)) {
+			
+			boolean isBoss = enemy.getMaxHealth() == 600;
+			
+			if(isAttacking && !hitOnce) {
+				int enemyX = enemy.getX();
+				int enemyY = enemy.getY();
+				double knockbackX = 3;
+				double knockbackY = -2;
+				if(isBoss){
+					enemyX = enemy.getBlueCrystalX();
+					enemyY = 645;
+					knockbackX = 0;
+					knockbackY = 0;
+				}
+				if(isEnemyAttackedFromLeft(enemyX) && isEnemyOnTheSameHeight(enemyY)) {
 					enemy.takeHit(whipDamage);
-					enemy.setVector(enemy.getDx() + 3,-2);
-					enemy.setAttackedOnce(true);
+					enemy.setVector(knockbackX,knockbackY);
+					hitOnce = true;
 					continue;
 				}
-				if(isEnemyAttackedFromRight(enemy)) {
+				if(isEnemyAttackedFromRight(enemyX) && isEnemyOnTheSameHeight(enemyY)) {
 					enemy.takeHit(whipDamage);
-					enemy.setVector(enemy.getDx() - 3,-2);
-					enemy.setAttackedOnce(true);
+					enemy.setVector(-knockbackX,knockbackY);
+					hitOnce = true;;
 				}
 			}
 		}
 	}
 	
-	private boolean isEnemyAttackedFromLeft(Enemy enemy){
-		return enemy.getX() > x && enemy.getX() < x + whipRange && isEnemyOnTheSameHeight(enemy) && facingRight;
+	private boolean isEnemyAttackedFromLeft(int enemyX){
+		return enemyX > x && enemyX < x + whipRange && facingRight;
 	}
 	
-	private boolean isEnemyAttackedFromRight(Enemy enemy){
-		return enemy.getX() < x && enemy.getX() > x - whipRange && isEnemyOnTheSameHeight(enemy) && !facingRight;
+	private boolean isEnemyAttackedFromRight(int enemyX){
+		return enemyX < x && enemyX > x - whipRange && !facingRight;
 	}
 	
-	private boolean isEnemyOnTheSameHeight(Enemy enemy){
-		return enemy.getY() > y - height/2 && enemy.getY() < y + height/2;
+	private boolean isEnemyOnTheSameHeight(int enemyY){
+		return enemyY > y - height/2f && enemyY < y + height/2f;
 	}
 	
 	// Calculate the next position of the player
@@ -195,7 +210,10 @@ public class Player extends MapObject{
 
 		// check attack has stopped
 		if(currentAction == ATTACKING) {
-			if(animation.isPlayedOnce()) isAttacking = false;
+			if(animation.isPlayedOnce()){
+				isAttacking = false;
+				hitOnce = false;
+			}
 		}
 		
 		if(flinching){

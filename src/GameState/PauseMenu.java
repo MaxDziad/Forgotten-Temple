@@ -51,7 +51,7 @@ public class PauseMenu extends ChoosableMenu{
 	protected void select() {
 		switch(currentChoice) {
 			case 0 -> gsm.resumeState(pausedGameState);
-			case 1 -> gsm.setState(pausedGameState);
+			case 1 -> gsm.restartLevel1();
 			case 2 -> gsm.setState(GameStateManager.MENU);
 			case 3 -> System.exit(0);
 		}

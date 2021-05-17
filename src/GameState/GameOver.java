@@ -6,14 +6,12 @@ import static GameMain.GamePanel.HEIGHT;
 import static GameMain.GamePanel.WIDTH;
 
 public class GameOver extends ChoosableMenu {
-
-    private final int gameOverState;
+    
     private static final Color BLACK_TRANSPARENT = new Color(0,0,0,0.4f);
     private boolean isBlackTransparentDrawn;
 
-    public GameOver(GameStateManager gsm, int gameOverState){
+    public GameOver(GameStateManager gsm){
         super(gsm);
-        this.gameOverState = gameOverState;
     }
 
     @Override
@@ -33,27 +31,28 @@ public class GameOver extends ChoosableMenu {
     }
     @Override
     public void update() {}
-
-    @Override
-    public void draw(Graphics2D g) {
-
+    
+    private void drawGameOver(Graphics2D g){
         g.setFont(new Font("Arial",Font.BOLD,80));
         g.setColor(Color.BLUE);
         g.drawString("GAME OVER", 280,120);
+    }
 
+    @Override
+    public void draw(Graphics2D g) {
         if(!isBlackTransparentDrawn) {
             g.setColor(BLACK_TRANSPARENT);
             g.fillRect(0, 0, WIDTH, HEIGHT);
             isBlackTransparentDrawn = true;
         }
-
         drawOptions(g);
+        drawGameOver(g);
     }
 
     @Override
     protected void select() {
         switch(currentChoice) {
-            case 0 -> gsm.setState(gameOverState);
+            case 0 -> gsm.restartLevel1();
             case 1 -> gsm.setState(GameStateManager.MENU);
             case 2 -> System.exit(0);
         }

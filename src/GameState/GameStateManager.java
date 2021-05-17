@@ -8,11 +8,11 @@ public class GameStateManager {
 	private int currentState;
 	
 	public static final int MENU = 0;
-	public static final int LEVEL1 = 1;
-	public static final int CONTROLS = 2;
-	public static final int LEVEL2 = 3;
-	public static final int PAUSE = 4;
-	public static final int GAMEOVER = 5;
+	public static final int LOADING = 1;
+	public static final int LEVEL1 = 2;
+	public static final int CONTROLS = 3;
+	public static final int GAMEOVER = 4;
+	public static final int PAUSE = 5;
 	
 	public GameStateManager() {
 		initialize();
@@ -20,24 +20,29 @@ public class GameStateManager {
 	
 	public void initialize(){
 		gameStates = new ArrayList<GameState>();
-		currentState = MENU;
 		gameStates.add(new MenuState(this));
+		gameStates.add(new Loading(this));
 		gameStates.add(new Level1(this));
 		gameStates.add(new Controls(this));
-		gameStates.add(new Level1(this));
+		gameStates.add(new GameOver(this));
+		
+		currentState = MENU;
 	}
 	
 	public void createPausedState(){
 		gameStates.add(new PauseMenu(this, currentState));
 	}
-
-	public void createGameOverState(){
-		gameStates.add(new GameOver(this, currentState));
-	}
 	
 	public void setState(int state) {
 		currentState = state;
 		gameStates.get(currentState).initialize();
+	}
+	
+	public void restartLevel1(){
+		currentState = LOADING;
+		gameStates.remove(LEVEL1);
+		gameStates.add(LEVEL1, new Level1(this));
+		currentState = LEVEL1;
 	}
 	
 	public void resumeState(int state){ currentState = state;}
@@ -64,7 +69,7 @@ public class GameStateManager {
 	
 	// Flag to check, if player is controling character (true) or in Menu/Pause (false)
 	public boolean isCurrentStateDynamic(){
-		return currentState == LEVEL1 || currentState == LEVEL2;
+		return currentState == LEVEL1;
 	}
 	
 }

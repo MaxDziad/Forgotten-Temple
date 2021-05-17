@@ -13,13 +13,13 @@ public class Golem extends Enemy{
 	private Player player;
 	private boolean isAttacking;
 	
-	//Neccessary, because golem's sprites have different height
-	private int currentHeight;
+	// To make his attacks faster when lower hp
+	private double rageScale;
 	
 	public Golem(TileMap tm, Player player) {
-		super(tm, "/Sprites/Golem.png", new int[] {1, 0, 0, 0, 2});
+		super(tm, "/Sprites/Golem.png", new int[] {4, 1, 1, 1, 2});
 		this.player = player;
-		currentHeight = 610;
+		currentAction = HIT;
 	}
 	
 	@Override
@@ -59,7 +59,7 @@ public class Golem extends Enemy{
 	@Override
 	protected void initializeStats() {
 		moveSpeed = 0.5;
-		maxSpeed = 1.5;
+		maxSpeed = 1.2;
 		fallSpeed = 0;
 		maxFallSpeed = 0;
 		
@@ -68,11 +68,24 @@ public class Golem extends Enemy{
 		
 		health = maxHealth = 600;
 		damage = 1;
+		rageScale = 1;
 	}
 	
 	protected void getNextPosition(){
+		
+		// Golem won't bug near the wall
+		if(x < 4010){
+			x = 4010;
+			dx = 0;
+		}
+		if(x > 4564){
+			x = 4564;
+			dx = 0;
+		}
+		
 		if(isAttacking) dx = 0;
 		else{
+			maxSpeed = 1.5 * (1/rageScale);
 			if(left) {
 				dx -= moveSpeed;
 				if(dx < -maxSpeed) {
@@ -108,16 +121,28 @@ public class Golem extends Enemy{
 			attack();
 	}
 	
-	private void horizontalAlwaysTheSame(){
-		y = currentHeight;
-		ytemp = currentHeight;
+	private void checkFlinching(){
+		if(flinching) {
+			long elapsed = (System.nanoTime() - flinchTimer) / 1000000;
+			if(elapsed > 400){
+				flinching = false;
+			}
+		}
+	}
+	
+	private void changeRageScale(){
+		if(health <= 0.5*maxHealth) rageScale = 0.8;
+		if(health <= 0.25*maxHealth) rageScale = 0.6;
+		
 	}
 	
 	public void update(){
-		horizontalAlwaysTheSame();
 		getNextPosition();
 		checkTileMapCollision();
 		setPosition(xtemp,ytemp);
+		updateBlueCrystalPosition();
+		changeRageScale();
+		checkFlinching();
 		followPlayer();
 		attackIfPlayerInRange();
 		
@@ -128,51 +153,57 @@ public class Golem extends Enemy{
 		
 		if(isAttacking){
 			if(currentAction != ATTACKING){
-				setAttackAnimation(3000);
+				setAttackAnimation(3500 * rageScale);
 			}
 		}
-		
-		else setWalkingAnimation(-1);
-		
-		changeCBoxShape();
-		animation.update();
+		else setWalkingAnimation(100 * rageScale);
 		
 		// set direction
 		if(currentAction != ATTACKING){
 			if(right) facingRight = true;
 			if(left) facingRight = false;
 		}
+		
+		changeCBoxShape();
+		
+		animation.update();
+		
 	}
 	
-	private void setWalkingAnimation(int delay){
-		currentAction = WALKING;
-		animation.setFrames(sprites.get(WALKING));
-		animation.setDelay(delay);
-		currentHeight = 610;
-		cwidth = 120;
-		cheight = 120;
+	private void setWalkingAnimation(double delay){
+		if (currentAction != WALKING) {
+			currentAction = WALKING;
+			animation.setFrames(sprites.get(WALKING));
+			animation.setDelay((int)delay);
+			cwidth = 120;
+			cheight = 120;
+		}
 	}
 	
-	private void setAttackAnimation(int delay){
+	private void setAttackAnimation(double delay){
 		currentAction = ATTACKING;
 		animation.setFrames(sprites.get(ATTACKING));
-		animation.setDelay(delay);
-		animation.setCurrentFrame(0);
-		currentHeight = 575;
+		animation.setDelay((int)delay);
 	}
 	
+	//THIS CODE IS BAD, IT CHANGES THE CSHAPE OF GOLEM DURING ANIMATIONS
 	protected Rectangle getRectangle(){
 		if(currentAction == WALKING) return new Rectangle((int)x - cwidth/2,(int)y - cheight/2, cwidth, cheight);
 		else{
 			if(!facingRight){
-				if(animation.getCurrentFrame() == 0) return new Rectangle((int)x + 20 - cwidth/2,(int)y - cheight/2, cwidth - 6, cheight);
-				return new Rectangle((int)x - (cwidth+40)/2,(int)y - 15 + cheight/2, cwidth, cheight);
+				if(animation.getCurrentFrame() == 0) return new Rectangle((int)x + 20 - cwidth/2,(int)y - 33 - cheight/2, cwidth - 6, cheight);
+				return new Rectangle((int)x - (cwidth+40)/2,(int)y - 55 + cheight/2, cwidth, cheight);
 			}
 			else{
-				if(animation.getCurrentFrame() == 0) return new Rectangle((int)x - 4 - cwidth/2,(int)y - cheight/2, cwidth, cheight);
-				return new Rectangle((int)x + 40 - cwidth/2,(int)y - 15 + cheight/2, cwidth, cheight);
+				if(animation.getCurrentFrame() == 0) return new Rectangle((int)x - 4 - cwidth/2,(int)y - 33 - cheight/2, cwidth, cheight);
+				return new Rectangle((int)x + 40 - cwidth/2,(int)y - 55 + cheight/2, cwidth, cheight);
 			}
 		}
+	}
+	
+	private void updateBlueCrystalPosition(){
+		if(facingRight) blueCrystalX = getX() - 35;
+		else blueCrystalX = getX() + 35;
 	}
 	
 	private void changeCBoxShape(){
@@ -186,27 +217,47 @@ public class Golem extends Enemy{
 		}
 	}
 	
+	private void drawHealthBar(Graphics2D g){
+		g.setColor(new Color(200,0,0));
+		g.fillRect(312,685,400,25);
+		g.setColor(new Color(0,170,0));
+		g.fillRect(312,685,(int)(health * (2/3f)),25);
+		
+		g.drawString("x: " + getX(),700,30);
+		g.drawString("y: " + getY(),700,50);
+	}
 	
 	public void draw(Graphics2D g){
+		drawHealthBar(g);
 		setMapPosition();
 		BufferedImage image = animation.getImage();
 		if(!facingRight){
 			image = flipImageHorizontally(image);
 		}
+		
+		int golemAttackingYPosition = (int)(y - 35 + ymap - height / 2);
+		
+		// THIS CODE IS ALSO BAD, IT'S CHANGING THE POSITION OF GOLEM IMAGE
 		if(currentAction == ATTACKING && animation.getCurrentFrame() == 1){
 			if(facingRight){
-				g.drawImage(image, (int)(x - 15 + xmap - width / 2), (int)(y + ymap - height / 2), null);
+				g.drawImage(image, (int)(x - 15 + xmap - width / 2), golemAttackingYPosition, null);
 			}
 			else{
-				g.drawImage(image, (int)(x - 50 + xmap - width / 2), (int)(y + ymap - height / 2), null);
+				g.drawImage(image, (int)(x - 50 + xmap - width / 2), golemAttackingYPosition, null);
 			}
 			return;
 		}
-		else if(currentAction == ATTACKING && animation.getCurrentFrame() == 0 && facingRight){
-			g.drawImage(image, (int)(x - 30 + xmap - width / 2), (int)(y + ymap - height / 2), null);
+		else if(currentAction == ATTACKING && animation.getCurrentFrame() == 0){
+			if(facingRight){
+				g.drawImage(image, (int)(x - 30 + xmap - width / 2), golemAttackingYPosition, null);
+			}
+			else{
+				g.drawImage(image, (int)(x + xmap - width / 2), golemAttackingYPosition, null);
+			}
 			return;
 		}
-		g.drawImage(image, (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
+		golemAttackingYPosition += 35;
+		g.drawImage(image, (int)(x + xmap - width / 2), golemAttackingYPosition, null);
 	}
 }
 
