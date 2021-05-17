@@ -21,6 +21,11 @@ public class Level1 extends GameState{
 	
 	private CutScene cutScene;
 	private Player player;
+
+	private GamePanel gp;
+
+	private int gameOver;
+
 	
 	//Cutscene flags
 	private boolean lockKeyboard;
@@ -91,9 +96,11 @@ public class Level1 extends GameState{
 			cutScene.finishBossFight();
 		}
 	}
+
 	
 	@Override
 	public void update() {
+		checkForGameOver();
 		checkForCutScenes();
 		player.update();
 		centerCamera();
@@ -158,6 +165,22 @@ public class Level1 extends GameState{
 			enemy.draw(g);
 		}
 	}
+
+	public void playGameOver(){
+		gameOver = gsm.getCurrentState();
+		gsm.createGameOverState();
+		gsm.setState(GameStateManager.GAMEOVER);
+	}
+
+	public void checkForGameOver(){
+		if(player.getCurrentHealth() == 0){
+			playGameOver();
+		}
+	}
+
+
+
+
 	
 	@Override
 	public void keyPressed(int k) {

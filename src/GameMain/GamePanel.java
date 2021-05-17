@@ -6,6 +6,7 @@ import java.awt.event.*;
 
 import javax.swing.JPanel;
 
+import Entity.Player;
 import GameState.GameState;
 import GameState.GameStateManager;
 
@@ -13,6 +14,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	// To save paused progress
 	private int pausedState;
+	private int gameOver;
+
 	
 	// Dimensions
 	public static final int WIDTH = 1024;
@@ -22,6 +25,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	// Game thread
 	private Thread thread;
 	private boolean isPaused;
+	private boolean isGameOver;
 	private static final int FPS = 60;
 	private static final long targetTime = 1000 / FPS;
 	
@@ -31,6 +35,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	// Game state manager (Menu, Level1 etc)
 	private GameStateManager gsm;
+
+	private Player player;
 
 	// Constructor
 	public GamePanel() {
@@ -56,6 +62,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		g = (Graphics2D) image.getGraphics();
 		
 		isPaused = false;
+		isGameOver = false;
 		gsm = new GameStateManager();
 		
 	}
@@ -113,6 +120,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		gsm.setState(GameStateManager.PAUSE);
 	}
 
+	/*public void checkForGameOver(){
+		if(player.getCurrentHealth() == 0 && gsm.isCurrentStateDynamic()){
+			isGameOver = true;
+			playGameOver();
+		}
+	}
+
+	public void playGameOver(){
+		gameOver = gsm.getCurrentState();
+		gsm.createGameOverState();
+		gsm.setState(GameStateManager.GAMEOVER);
+	}
+*/
+
 	// Key listeners
 	public void keyTyped(KeyEvent key) {}
 	
@@ -124,6 +145,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	public void keyReleased(KeyEvent key) {
 		if(!isPaused) gsm.keyReleased(key.getKeyCode());
+		if(!isGameOver) gsm.keyReleased(key.getKeyCode());
 	}
 	
 }
