@@ -51,7 +51,7 @@ public class Player extends MapObject{
 		
 		facingRight = true;
 		
-		currentHealth = maxHealth = 3;
+		currentHealth = maxHealth = 100;
 		
 		whipDamage = 20;
 		whipRange = 80;
@@ -69,7 +69,11 @@ public class Player extends MapObject{
 		flinching = true;
 		flinchTimer = System.nanoTime();
 	}
-	
+
+	public void setCurrentHealth(int currentHealth){
+		this.currentHealth = currentHealth;
+	}
+
 	// Getters
 	public int getCurrentHealth() {
 		return currentHealth;
@@ -78,6 +82,7 @@ public class Player extends MapObject{
 	public int getMaxHealth() {
 		return maxHealth;
 	}
+
 
 	// FOR THE HORDE!
 	public void attack(){
