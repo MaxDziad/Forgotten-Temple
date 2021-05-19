@@ -62,7 +62,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		g = (Graphics2D) image.getGraphics();
 		
 		isPaused = false;
-		isGameOver = false;
+		//isGameOver = false;
 		gsm = new GameStateManager();
 		
 	}

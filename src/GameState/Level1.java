@@ -33,6 +33,8 @@ public class Level1 extends GameState{
 	private ArrayList<Enemy> enemies;
 
 	private HUD hud;
+
+	private Graphics2D g;
 	
 	public Level1(GameStateManager gsm){
 		super(gsm);
@@ -49,7 +51,9 @@ public class Level1 extends GameState{
 		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
-		player.setPosition(1800,130);
+		//player.setPosition(150,700);
+		player.setPosition(1800,100);
+
 		//player.setPosition(4200,600);
 		
 		hud = new HUD(player);
@@ -131,6 +135,10 @@ public class Level1 extends GameState{
 			bossFightFinished = true;
 			lockUnlockKeyboard();
 			cutScene.finishBossFight();
+
+		}
+		if(player.getX() > 4262 && player.getX() < 4315 && bossFightFinished){
+			gsm.setState(GameStateManager.WIN);
 		}
 	}
 	

@@ -12,7 +12,9 @@ public class GameStateManager {
 	public static final int LEVEL1 = 2;
 	public static final int CONTROLS = 3;
 	public static final int GAMEOVER = 4;
-	public static final int PAUSE = 5;
+	public static final int WIN = 5;
+	public static final int PAUSE = 6;
+
 	
 	public GameStateManager() {
 		initialize();
@@ -25,6 +27,7 @@ public class GameStateManager {
 		gameStates.add(new Level1(this));
 		gameStates.add(new Controls(this));
 		gameStates.add(new GameOver(this));
+		gameStates.add(new WinningScreen(this));
 		
 		currentState = MENU;
 	}

@@ -51,7 +51,7 @@ public class Player extends MapObject{
 		
 		facingRight = true;
 		
-		currentHealth = maxHealth = 100;
+		currentHealth = maxHealth = 300;
 		
 		whipDamage = 20;
 		whipRange = 80;
