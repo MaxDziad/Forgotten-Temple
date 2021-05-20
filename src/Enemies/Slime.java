@@ -99,8 +99,7 @@ public class Slime extends Enemy {
     }
     
     public void draw(Graphics2D g){
-
-        if(notOnScreen()) return;
+        
 
         setMapPosition();
         super.draw(g);
