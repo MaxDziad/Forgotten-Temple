@@ -1,5 +1,7 @@
 package GameState;
 
+import Entity.PlaySound;
+import Entity.Sounds;
 import GameMain.GamePanel;
 
 import java.awt.*;

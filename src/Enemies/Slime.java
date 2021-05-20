@@ -1,5 +1,7 @@
 package Enemies;
 
+import Entity.PlaySound;
+import Entity.Sounds;
 import TileMap.TileMap;
 
 import java.awt.*;
@@ -11,6 +13,12 @@ public class Slime extends Enemy {
         setWalkingAnimation();
         right = true;
         facingRight = true;
+    }
+    
+    @Override
+    public void takeHit(int damage) {
+        super.takeHit(damage);
+        PlaySound.playSound(Sounds.slimeHit);
     }
     
     @Override

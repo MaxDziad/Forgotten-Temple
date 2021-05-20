@@ -33,10 +33,6 @@ public class Animation {
 		this.delay = delay;
 	}
 	
-	public void setCurrentFrame(int currentFrame){
-		this.currentFrame = currentFrame;
-	}
-	
 	// Updates and changes frames in current animation
 	public void update(){
 		if(delay == -1) return;
@@ -53,10 +49,6 @@ public class Animation {
 	}
 	
 	// Getters
-	public BufferedImage[] getFrames() {
-		return frames;
-	}
-	
 	public int getCurrentFrame() {
 		return currentFrame;
 	}

@@ -48,7 +48,7 @@ public class GameStateManager {
 	}
 	
 	public void stopBackgroundClip(){
-		backgroundMusicClip.close();
+		backgroundMusicClip.stop();
 	}
 	
 	private void changeBackgroundMusicClip(){
@@ -56,6 +56,8 @@ public class GameStateManager {
 		switch(currentState){
 			case MENU -> backgroundMusicClip = PlaySound.repeatSound(Sounds.menu);
 			case LEVEL1 -> backgroundMusicClip = PlaySound.repeatSound(Sounds.level1);
+			case GAMEOVER -> backgroundMusicClip = PlaySound.repeatSound(Sounds.gameover);
+			case WIN -> PlaySound.playSound(Sounds.win);
 		}
 	}
 	
@@ -71,7 +73,10 @@ public class GameStateManager {
 		changeBackgroundMusicClip();
 	}
 	
-	public void resumeState(int state){ currentState = state;}
+	public void resumeState(int state){
+		currentState = state;
+		backgroundMusicClip.start();
+	}
 	
 	public int getCurrentState() {
 		return currentState;

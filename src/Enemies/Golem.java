@@ -1,6 +1,8 @@
 package Enemies;
 
+import Entity.PlaySound;
 import Entity.Player;
+import Entity.Sounds;
 import TileMap.TileMap;
 
 import javax.imageio.ImageIO;
@@ -12,6 +14,7 @@ public class Golem extends Enemy{
 	
 	private Player player;
 	private boolean isAttacking;
+	private boolean attackedOnce;
 	
 	// To make his attacks faster when lower hp
 	private double rageScale;
@@ -20,6 +23,12 @@ public class Golem extends Enemy{
 		super(tm, "/Sprites/Golem.png", new int[] {4, 1, 1, 1, 2});
 		this.player = player;
 		currentAction = HIT;
+	}
+	
+	@Override
+	public void takeHit(int damage) {
+		super.takeHit(damage);
+		PlaySound.playSound(Sounds.golemHit);
 	}
 	
 	@Override
@@ -69,6 +78,8 @@ public class Golem extends Enemy{
 		health = maxHealth = 600;
 		damage = 1;
 		rageScale = 1;
+		
+		attackedOnce = false;
 	}
 	
 	protected void getNextPosition(){
@@ -149,11 +160,16 @@ public class Golem extends Enemy{
 		// check attack has stopped
 		if(currentAction == ATTACKING) {
 			if(animation.isPlayedOnce()) isAttacking = false;
+			if(!attackedOnce && animation.getCurrentFrame() == 1){
+				attackedOnce = true;
+				PlaySound.playSound(Sounds.golemAttack);
+			}
 		}
 		
 		if(isAttacking){
 			if(currentAction != ATTACKING){
 				setAttackAnimation(3500 * rageScale);
+				attackedOnce = false;
 			}
 		}
 		else setWalkingAnimation(100 * rageScale);
@@ -181,6 +197,7 @@ public class Golem extends Enemy{
 	}
 	
 	private void setAttackAnimation(double delay){
+		PlaySound.playSound(Sounds.golemCharge);
 		currentAction = ATTACKING;
 		animation.setFrames(sprites.get(ATTACKING));
 		animation.setDelay((int)delay);

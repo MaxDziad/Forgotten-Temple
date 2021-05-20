@@ -51,7 +51,7 @@ public class Player extends MapObject{
 		
 		facingRight = true;
 		
-		currentHealth = maxHealth = 300;
+		currentHealth = maxHealth = 3;
 		
 		whipDamage = 20;
 		whipRange = 80;
@@ -240,7 +240,10 @@ public class Player extends MapObject{
 		}
 		
 		else if(dy < 0) {
-			if(currentAction != JUMPING) setJumpingAnimation();
+			if(currentAction != JUMPING) {
+				setJumpingAnimation();
+				if(jumping) PlaySound.playSound(Sounds.jump);
+			}
 		}
 		
 		else if(left || right) walkOrRunAnimation();
@@ -274,7 +277,7 @@ public class Player extends MapObject{
 	}
 	
 	private void setJumpingAnimation(){
-		currentAction = FALLING;
+		currentAction = JUMPING;
 		animation.setFrames(sprites.get(FALLING));
 		animation.setDelay(-1);
 		width = 32;
