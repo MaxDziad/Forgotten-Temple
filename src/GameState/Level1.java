@@ -33,8 +33,6 @@ public class Level1 extends GameState{
 
 	private HUD hud;
 	
-	private Clip backgroundMusicClip;
-	
 	public Level1(GameStateManager gsm){
 		super(gsm);
 	}
@@ -66,18 +64,15 @@ public class Level1 extends GameState{
 		
 		enemies = new ArrayList<Enemy>();
 		populateEnemies();
-		
-	//	this.backgroundMusicClip = null;
 	}
 	
 	public void spawnBoss(){
 		boss.setPosition(4564, 610);
 		enemies.add(boss);
-		
 	}
 	
 	public void populateEnemies(){
-		Slime s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15;
+		Slime s2,s4,s5,s8,s10,s11,s12,s14,s15;
 		s2 = new Slime(tileMap);
 		s4 = new Slime(tileMap);
 		s5 = new Slime(tileMap);
@@ -110,7 +105,8 @@ public class Level1 extends GameState{
 	private void checkForCutScenes(){
 		if(player.getX() >= 4310 && !bossFightStarted){
 			changeCamera();
-			//backgroundMusicClip = PlaySound.repeatSound(Sounds.bossFightMusic);
+			gsm.stopBackgroundClip();
+			gsm.setBackgroundMusicClip(PlaySound.repeatSound(Sounds.bossFightMusic));
 			bossFightStarted = true;
 			cutScene.startFirstBoss();
 			spawnBoss();

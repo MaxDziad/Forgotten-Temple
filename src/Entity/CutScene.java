@@ -1,16 +1,10 @@
 package Entity;
 
-import GameState.GameStateManager;
-import GameState.Level1;
 import TileMap.TileMap;
-
-import java.awt.*;
 
 public class CutScene {
 	private Player player;
 	private TileMap tileMap;
-	private Graphics2D g;
-	private GameStateManager gsm;
 
 	public CutScene(Player player, TileMap tileMap){
 		this.player = player;
@@ -51,11 +45,13 @@ public class CutScene {
 
 	public void update(){
 		if(player.getX() < 4262){
+			player.setLeft(false);
 			player.setRight(true);
 			return;
 
 		}
 		if(player.getX() > 4315){
+			player.setRight(false);
 			player.setLeft(true);
 			return;
 		}

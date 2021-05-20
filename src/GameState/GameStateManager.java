@@ -1,11 +1,16 @@
 package GameState;
 
+import Entity.PlaySound;
+import Entity.Sounds;
+
+import javax.sound.sampled.Clip;
 import java.util.ArrayList;
 
 public class GameStateManager {
 	
 	private ArrayList<GameState> gameStates;
 	private int currentState;
+	private Clip backgroundMusicClip;
 	
 	public static final int MENU = 0;
 	public static final int LOADING = 1;
@@ -28,8 +33,8 @@ public class GameStateManager {
 		gameStates.add(new Controls(this));
 		gameStates.add(new GameOver(this));
 		gameStates.add(new WinningScreen(this));
-		
 		currentState = MENU;
+		backgroundMusicClip = PlaySound.repeatSound(Sounds.menu);
 	}
 	
 	public void createPausedState(){
@@ -39,6 +44,23 @@ public class GameStateManager {
 	public void setState(int state) {
 		currentState = state;
 		gameStates.get(currentState).initialize();
+		changeBackgroundMusicClip();
+	}
+	
+	public void stopBackgroundClip(){
+		backgroundMusicClip.close();
+	}
+	
+	private void changeBackgroundMusicClip(){
+		stopBackgroundClip();
+		switch(currentState){
+			case MENU -> backgroundMusicClip = PlaySound.repeatSound(Sounds.menu);
+			case LEVEL1 -> backgroundMusicClip = PlaySound.repeatSound(Sounds.level1);
+		}
+	}
+	
+	public void setBackgroundMusicClip(Clip clip){
+		backgroundMusicClip = clip;
 	}
 	
 	public void restartLevel1(){
@@ -46,6 +68,7 @@ public class GameStateManager {
 		gameStates.remove(LEVEL1);
 		gameStates.add(LEVEL1, new Level1(this));
 		currentState = LEVEL1;
+		changeBackgroundMusicClip();
 	}
 	
 	public void resumeState(int state){ currentState = state;}

@@ -6,8 +6,10 @@ import java.io.BufferedInputStream;
 
 public enum Sounds {
 	whipAttack("/Soundtracks/whipAttack.wav",63548),
-	//bossFightMusic("/Soundtracks/bossfight.wav", 0),
-	ouch("/Soundtracks/ouch.wav",69460);
+	bossFightMusic("/Soundtracks/bossfight.wav"),
+	ouch("/Soundtracks/ouch.wav",69460),
+	menu("/Soundtracks/menu.wav",69460),
+	level1("/Soundtracks/level1.wav");
 	
 	public final AudioInputStream AUDIO_INPUT_STREAM;
 	public final String PATH;
@@ -28,5 +30,10 @@ public enum Sounds {
 		this.PATH = path;
 		this.AUDIO_INPUT_STREAM = getAudioInputStream();
 		this.AUDIO_INPUT_STREAM.mark(bytes);
+	}
+	
+	Sounds(String path) {
+		this.PATH = path;
+		this.AUDIO_INPUT_STREAM = getAudioInputStream();
 	}
 }
