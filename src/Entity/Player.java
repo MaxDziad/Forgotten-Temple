@@ -63,6 +63,7 @@ public class Player extends MapObject{
 	
 	public void takeHit(int damage){
 		if(flinching) return;
+		PlaySound.playSound(Sounds.ouch);
 		currentHealth -= damage;
 		if(currentHealth < 0) currentHealth = 0;
 		if(currentHealth == 0) dead = true;
@@ -259,6 +260,7 @@ public class Player extends MapObject{
 	
 	private void setAttackAnimation(){
 		currentAction = ATTACKING;
+		PlaySound.playSound(Sounds.whipAttack);
 		animation.setFrames(sprites.get(ATTACKING));
 		animation.setDelay(60);
 		width = 128;

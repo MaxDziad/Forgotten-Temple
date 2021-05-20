@@ -2,14 +2,13 @@ package GameState;
 
 import Enemies.Golem;
 import Enemies.Slime;
-import Entity.CutScene;
+import Entity.*;
 import Enemies.Enemy;
-import Entity.HUD;
-import Entity.Player;
 import GameMain.GamePanel;
 import TileMap.*;
 
 
+import javax.sound.sampled.Clip;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -33,8 +32,8 @@ public class Level1 extends GameState{
 	private ArrayList<Enemy> enemies;
 
 	private HUD hud;
-
-	private Graphics2D g;
+	
+	private Clip backgroundMusicClip;
 	
 	public Level1(GameStateManager gsm){
 		super(gsm);
@@ -51,10 +50,10 @@ public class Level1 extends GameState{
 		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
-		player.setPosition(150,700); //Start
+		//player.setPosition(150,700); //Start
 		//player.setPosition(1800,100); //Middle
 
-		//player.setPosition(4200,600);  //Boss
+		player.setPosition(4200,600);  //Boss
 		
 		hud = new HUD(player);
 		
@@ -67,6 +66,8 @@ public class Level1 extends GameState{
 		
 		enemies = new ArrayList<Enemy>();
 		populateEnemies();
+		
+	//	this.backgroundMusicClip = null;
 	}
 	
 	public void spawnBoss(){
@@ -109,6 +110,7 @@ public class Level1 extends GameState{
 	private void checkForCutScenes(){
 		if(player.getX() >= 4310 && !bossFightStarted){
 			changeCamera();
+			//backgroundMusicClip = PlaySound.repeatSound(Sounds.bossFightMusic);
 			bossFightStarted = true;
 			cutScene.startFirstBoss();
 			spawnBoss();
