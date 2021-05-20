@@ -51,10 +51,10 @@ public class Level1 extends GameState{
 		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
-		//player.setPosition(150,700);
-		player.setPosition(1800,100);
+		player.setPosition(150,700); //Start
+		//player.setPosition(1800,100); //Middle
 
-		//player.setPosition(4200,600);
+		//player.setPosition(4200,600);  //Boss
 		
 		hud = new HUD(player);
 		
@@ -72,53 +72,36 @@ public class Level1 extends GameState{
 	public void spawnBoss(){
 		boss.setPosition(4564, 610);
 		enemies.add(boss);
+		
 	}
 	
 	public void populateEnemies(){
 		Slime s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11,s12,s13,s14,s15;
-		s1 = new Slime(tileMap);
 		s2 = new Slime(tileMap);
-		s3 = new Slime(tileMap);
 		s4 = new Slime(tileMap);
 		s5 = new Slime(tileMap);
-		s6 = new Slime(tileMap);
-		s7 = new Slime(tileMap);
 		s8 = new Slime(tileMap);
-		s9 = new Slime(tileMap);
 		s10 = new Slime(tileMap);
 		s11 = new Slime(tileMap);
 		s12 = new Slime(tileMap);
-		s13 = new Slime(tileMap);
 		s14 = new Slime(tileMap);
 		s15 = new Slime(tileMap);
-		s1.setPosition(300,709);
 		s2.setPosition(1200,640);
-		s3.setPosition(1139,453);
 		s4.setPosition(931,389);
 		s5.setPosition(1666,130);
-		s6.setPosition(1802,130);
-		s7.setPosition(1938,130);
 		s8.setPosition(2074,130);
-		s9.setPosition(2400,325);
 		s10.setPosition(1876,421);
 		s11.setPosition(2198,421);
 		s12.setPosition(2623,709);
-		s13.setPosition(2520,325);
 		s14.setPosition(3380,197);
 		s15.setPosition(3156,197);
-		enemies.add(s1);
 		enemies.add(s2);
-		enemies.add(s3);
 		enemies.add(s4);
 		enemies.add(s5);
-		enemies.add(s6);
-		enemies.add(s7);
 		enemies.add(s8);
-		enemies.add(s9);
 		enemies.add(s10);
 		enemies.add(s11);
 		enemies.add(s12);
-		enemies.add(s13);
 		enemies.add(s14);
 		enemies.add(s15);
 	}
