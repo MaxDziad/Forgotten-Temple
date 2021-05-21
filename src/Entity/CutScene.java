@@ -2,23 +2,16 @@ package Entity;
 
 import TileMap.TileMap;
 
+// something like script
 public class CutScene {
+	
+	// necessary to control player and change tiles in map
 	private Player player;
 	private TileMap tileMap;
 
 	public CutScene(Player player, TileMap tileMap){
 		this.player = player;
 		this.tileMap = tileMap;
-	}
-	
-	//4288
-	public void startFirstBoss(){
-		tileMap.setTileOnMap(20,118,15);
-		tileMap.setTileOnMap(19,118,16);
-	}
-	
-	public void finishBossFight(){
-		makeExit();
 	}
 	
 	private void makeExit(){
@@ -41,8 +34,19 @@ public class CutScene {
 		tileMap.setTileOnMap(19,135,10);
 		tileMap.setTileOnMap(20,135,10);
 	}
+	
+	// whenever player reaches center of the temple
+	public void startFirstBoss(){
+		tileMap.setTileOnMap(20,118,15);
+		tileMap.setTileOnMap(19,118,16);
+	}
+	
+	// whenever player defeats golem
+	public void finishBossFight(){
+		makeExit();
+	}
 
-
+	// leads the player to exit
 	public void update(){
 		if(player.getX() < 4262){
 			player.setLeft(false);

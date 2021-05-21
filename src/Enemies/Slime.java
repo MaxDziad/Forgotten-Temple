@@ -1,12 +1,15 @@
 package Enemies;
 
-import Entity.PlaySound;
-import Entity.Sounds;
+import Sound.PlaySound;
+import Sound.Sounds;
 import TileMap.TileMap;
 
 import java.awt.*;
 
 public class Slime extends Enemy {
+    
+    private boolean flinching;
+    private long flinchTimer;
 
     public Slime(TileMap tm){
         super(tm,"/Sprites/slime.png",  new int[] {3, 2});
@@ -16,25 +19,27 @@ public class Slime extends Enemy {
     }
     
     @Override
-    public void takeHit(int damage) {
-        super.takeHit(damage);
-        PlaySound.playSound(Sounds.slimeHit);
-    }
-    
-    @Override
     protected void initializeStats() {
         moveSpeed = 0.1;
         maxSpeed = 1;
         fallSpeed = 0.2;
         maxFallSpeed = 10.0;
-    
+        
         width = 64;
         height = 48;
         cwidth = 30;
         cheight = 40;
-    
+        
         health = maxHealth = 100;
-        damage = 1;
+    }
+    
+    @Override
+    public void takeHit(int damage) {
+        if(dead || flinching) return;
+        super.takeHit(damage);
+        flinching = true;
+        flinchTimer = System.nanoTime();
+        PlaySound.playSound(Sounds.slimeHit);
     }
     
     protected void getNextPosition(){
@@ -50,7 +55,6 @@ public class Slime extends Enemy {
                 dx = maxSpeed;
             }
         }
-        
         if(falling) {
             dy += fallSpeed;
         }
@@ -70,7 +74,7 @@ public class Slime extends Enemy {
     }
     
     private void checkPosition(){
-        // If it hits a wall, go other direction
+        // change direction when facing wall or fall
         if((right && dx == 0) || !bottomRight){
             right = false;
             left = true;
@@ -82,16 +86,6 @@ public class Slime extends Enemy {
             left = false;
             facingRight = true;
         }
-    }
-
-    public void update(){
-        
-        getNextPosition();
-        checkTileMapCollision();
-        setPosition(xtemp,ytemp);
-        checkFlinching();
-        checkPosition();
-        animation.update();
     }
     
     private void setWalkingAnimation(){
@@ -106,9 +100,18 @@ public class Slime extends Enemy {
         animation.setDelay(300);
     }
     
-    public void draw(Graphics2D g){
+    public void update(){
+        getNextPosition();
+        checkTileMapCollision();
+        setPosition(xtemp,ytemp);
         
-
+        checkFlinching();
+        
+        checkPosition();
+        animation.update();
+    }
+    
+    public void draw(Graphics2D g){
         setMapPosition();
         super.draw(g);
     }

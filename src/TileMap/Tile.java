@@ -7,11 +7,10 @@ public class Tile {
 	private BufferedImage image;
 	private int type;
 	
-	// Classification of tile type
+	// classification of tile type; if 1 -> Map Objects will collide with them
 	public static final int NORMAL = 0;
 	public static final int BLOCKED = 1;
 	
-	// Constructor
 	public Tile(BufferedImage image, int type){
 		this.image = image;
 		this.type = type;
@@ -20,7 +19,6 @@ public class Tile {
 	public BufferedImage getImage(){
 		return image;
 	}
-	
 	public int getType(){
 		return type;
 	}

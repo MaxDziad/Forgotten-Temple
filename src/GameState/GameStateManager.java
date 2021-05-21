@@ -1,17 +1,19 @@
 package GameState;
 
-import Entity.PlaySound;
-import Entity.Sounds;
+import Sound.PlaySound;
+import Sound.Sounds;
 
 import javax.sound.sampled.Clip;
 import java.util.ArrayList;
 
+// has access to all game states and manages them
 public class GameStateManager {
-	
 	private ArrayList<GameState> gameStates;
 	private int currentState;
+	
 	private Clip backgroundMusicClip;
 	
+	// all game states
 	public static final int MENU = 0;
 	public static final int LOADING = 1;
 	public static final int LEVEL1 = 2;
@@ -19,7 +21,6 @@ public class GameStateManager {
 	public static final int GAME_OVER = 4;
 	public static final int WIN = 5;
 	public static final int PAUSE = 6;
-
 	
 	public GameStateManager() {
 		initialize();
@@ -33,10 +34,16 @@ public class GameStateManager {
 		gameStates.add(new Controls(this));
 		gameStates.add(new GameOver(this));
 		gameStates.add(new WinningScreen(this));
-		currentState = MENU;
+		
 		backgroundMusicClip = PlaySound.repeatSound(Sounds.menu);
+		currentState = MENU;
 	}
 	
+	public int getCurrentState() {
+		return currentState;
+	}
+	
+	// adds paused state to the game, the reason is because paused state holds information about game state before pause
 	public void createPausedState(){
 		gameStates.add(new PauseMenu(this, currentState));
 	}
@@ -47,6 +54,7 @@ public class GameStateManager {
 		changeBackgroundMusicClip();
 	}
 	
+	// necessary so the music in background from CONTROLS to MENU continues to play
 	public void fromPauseToMenu(){
 		currentState = MENU;
 		gameStates.get(currentState).initialize();
@@ -71,6 +79,7 @@ public class GameStateManager {
 		backgroundMusicClip = clip;
 	}
 	
+	// full restart of level1
 	public void restartLevel1(){
 		currentState = LOADING;
 		gameStates.remove(LEVEL1);
@@ -84,8 +93,9 @@ public class GameStateManager {
 		backgroundMusicClip.start();
 	}
 	
-	public int getCurrentState() {
-		return currentState;
+	// allows to pause the game when playing (only during LEVEL1)
+	public boolean isCurrentStateDynamic(){
+		return currentState == LEVEL1;
 	}
 	
 	public void update() {
@@ -102,11 +112,6 @@ public class GameStateManager {
 	
 	public void keyReleased(int k) {
 		gameStates.get(currentState).keyReleased(k);
-	}
-	
-	// Flag to check, if player is controling character (true) or in Menu/Pause (false)
-	public boolean isCurrentStateDynamic(){
-		return currentState == LEVEL1;
 	}
 	
 }

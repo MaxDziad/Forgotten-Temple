@@ -1,7 +1,6 @@
 package GameState;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 
 import static GameMain.GamePanel.HEIGHT;
 import static GameMain.GamePanel.WIDTH;
@@ -35,19 +34,6 @@ public class PauseMenu extends ChoosableMenu{
 	}
 	
 	@Override
-	public void update() {}
-	
-	@Override
-	public void draw(Graphics2D g) {
-		if(!isBlackTransparentDrawn) {
-			g.setColor(BLACK_TRANSPARENT);
-			g.fillRect(0, 0, WIDTH, HEIGHT);
-			isBlackTransparentDrawn = true;
-		}
-		drawOptions(g);
-	}
-	
-	@Override
 	protected void select() {
 		switch(currentChoice) {
 			case 0 -> gsm.resumeState(pausedGameState);
@@ -55,5 +41,20 @@ public class PauseMenu extends ChoosableMenu{
 			case 2 -> gsm.setState(GameStateManager.MENU);
 			case 3 -> System.exit(0);
 		}
+	}
+	
+	private void drawBlackTransparentBackground(Graphics2D g){
+		g.setColor(BLACK_TRANSPARENT);
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+		isBlackTransparentDrawn = true;
+	}
+	
+	@Override
+	public void update() {}
+	
+	@Override
+	public void draw(Graphics2D g) {
+		if(!isBlackTransparentDrawn) drawBlackTransparentBackground(g);
+		drawOptions(g);
 	}
 }

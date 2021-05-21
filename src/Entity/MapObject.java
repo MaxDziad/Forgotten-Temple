@@ -25,21 +25,21 @@ public abstract class MapObject {
     protected double dx;
     protected double dy;
 
-    // dimensions
+    // sprite dimensions
     protected int width;
     protected int height;
 
-    // collision box size
+    // collision box size (hitbox)
     protected int cwidth;
     protected int cheight;
 
-    // collision
+    // for collision calculation
     protected int currRow;
     protected int currCol;
-    protected double xdest;    // x destination
-    protected double ydest;    // y destination
-    protected double xtemp;    // temporary x
-    protected double ytemp;    // temporary y
+    protected double xdest;
+    protected double ydest;
+    protected double xtemp;
+    protected double ytemp;
 
     // 4-point detectors for collision detection (each for every corner)
     protected boolean topLeft;
@@ -50,17 +50,16 @@ public abstract class MapObject {
     // movement
     protected boolean left;
     protected boolean right;
-    protected boolean down;
     protected boolean jumping;
     protected boolean falling;
 
-    // movement attributes (some of these may be optional)
-    protected double moveSpeed;   //acceleration
+    // movement attributes
+    protected double moveSpeed;      //acceleration
     protected double maxSpeed;
-    protected double stopSpeed;   //de-acceleration
-    protected double fallSpeed;   //acceleration
+    protected double stopSpeed;      //de-acceleration
+    protected double fallSpeed;      //fall acceleration
     protected double maxFallSpeed;
-    protected double jumpStart;
+    protected double jumpStart;      //
     protected double stopJumpSpeed;  //holding longer jump button = longer jump
     
     // list of sprites
@@ -69,7 +68,6 @@ public abstract class MapObject {
     // animation
     protected Animation animation;
     protected int currentAction;
-    protected int previousAction;
     
     // if it's facing left, we have to flip the sprite
     protected boolean facingRight;
@@ -77,13 +75,12 @@ public abstract class MapObject {
     // animation actions
     protected static final int WALKING = 0;
     protected static final int HIT = 1;
-    protected static final int DEATH = 2;
+    protected static final int DEATH = 2;      // not enough time to implement images for death animation
     protected static final int FALLING = 3;
     protected static final int ATTACKING = 4;
     protected static final int JUMPING = 5;
     protected static final int IDLE = 6;
-
-    // Constructor
+    
     public MapObject(TileMap tm, String spritesPath, int[] numberOfFrames){
         tileMap = tm;
         tileSize = tm.getTileSize();
@@ -96,25 +93,26 @@ public abstract class MapObject {
     
     protected void loadSprites(String spritesPath, int[] numberOfFrames){
         try{
-            // Load sprite
+            // load sprite
             BufferedImage spritesheet = ImageIO.read(getClass().getResourceAsStream(spritesPath));
         
             int numberOfRows = spritesheet.getHeight() / height;
-        
+            
             sprites = new ArrayList<>();
         
-            // Every row
+            // every row
             for(int i = 0; i < numberOfRows; i++){
                 BufferedImage[] bi = new BufferedImage[numberOfFrames[i]];
-                // Every column
+                // every column
                 for(int j = 0; j < numberOfFrames[i]; j++){
+                    // condition for Player, attacking sprite has more width
                     if(i == 4){
                         bi[j] = spritesheet.getSubimage(j*width*4, i*height, width*4, height);
                         continue;
                     }
                     bi[j] = spritesheet.getSubimage(j*width, i*height, width, height);
                 }
-                // Add row to sprites variable
+                // add row to sprites variable
                 sprites.add(bi);
             }
         }
@@ -123,19 +121,47 @@ public abstract class MapObject {
         }
     }
     
-    // Checks if map object collided with another one
+    public int getX() { return (int)x; }
+    public int getY() { return (int)y; }
+    
+    public void setPosition(double x, double y){
+        this.x = x;
+        this.y = y;
+    }
+    
+    public void setVector(double dx, double dy) {
+        this.dx = dx;
+        this.dy = dy;
+    }
+    
+    public void setMapPosition(){
+        xmap = tileMap.getX();
+        ymap = tileMap.getY();
+    }
+    
+    public void setLeft(boolean b){
+        left = b;
+    }
+    
+    public void setRight(boolean b){
+        right = b;
+    }
+    
+    public void setJumping(boolean b){ jumping = b; }
+    
+    // check if map object collided with another one
     public boolean intersects(MapObject o){
         Rectangle r1 = getRectangle();
         Rectangle r2 = o.getRectangle();
         return r1.intersects(r2);
     }
     
-    
+    // that's a hitbox size and position, every map object has rectangular cshape
     protected Rectangle getRectangle(){
         return new Rectangle((int)x - cwidth/2,(int)y - cheight/2, cwidth, cheight);
     }
 
-    // Finds corners of blocking tiles
+    // calculate 4-point corners for collision detection
     public void calculateCorners(double x, double y){
         int leftTile = (int)(x - cwidth / 2) / tileSize;
         int rightTile = (int)(x + cwidth / 2 - 1) / tileSize;
@@ -154,7 +180,8 @@ public abstract class MapObject {
         
     }
     
-    // Check whether or not we have run into a blocked tile or a normal tile
+    // check whether or not we've run into a blocked tile or a normal tile
+    // then calculate the next position of MapObject
     public void checkTileMapCollision(){
         currCol = (int)x / tileSize;
         currRow = (int)y / tileSize;
@@ -234,7 +261,7 @@ public abstract class MapObject {
         }
     }
 
-    // Check whether or not the object is on the screen
+    // check whether or not the object is on the screen for memory saving
     public boolean notOnScreen(){
         return x + xmap + width < 0 || x + xmap - width > GamePanel.WIDTH ||
                 y + ymap + height < 0 ||
@@ -249,58 +276,15 @@ public abstract class MapObject {
         return image;
     }
     
-    public void draw(Graphics2D g){
+    protected void drawImage(Graphics2D g){
         BufferedImage image = animation.getImage();
         if(!facingRight){
             image = flipImageHorizontally(image);
         }
         g.drawImage(image, (int)(x + xmap - width / 2), (int)(y + ymap - height / 2), null);
     }
-
-    // Getters
-    public int getX() { return (int)x; }
-    public int getY() { return (int)y; }
     
-    protected double getDx() {
-        return dx;
+    public void draw(Graphics2D g){
+        drawImage(g);
     }
-    
-    protected double getDy() {
-        return dy;
-    }
-    
-    // Setters
-    public void setPosition(double x, double y){
-        this.x = x;
-        this.y = y;
-    }
-    
-    public void setVector(double dx, double dy) {
-        this.dx = dx;
-        this.dy = dy;
-    }
-    
-    public void setMapPosition(){
-        xmap = tileMap.getX();
-        ymap = tileMap.getY();
-    }
-
-    public void setLeft(boolean b){
-        left = b;
-    }
-    
-    public void setRight(boolean b){
-        right = b;
-    }
-    
-    public void setDown(boolean b){
-        down = b;
-    }
-    
-    public void setJumping(boolean b){
-        jumping = b;
-    }
-    
-
-
 }

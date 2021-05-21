@@ -5,6 +5,8 @@ import Enemies.Slime;
 import Entity.*;
 import Enemies.Enemy;
 import GameMain.GamePanel;
+import Sound.PlaySound;
+import Sound.Sounds;
 import TileMap.*;
 
 
@@ -20,13 +22,13 @@ public class Level1 extends GameState{
 	private CutScene cutScene;
 	private Player player;
 	
-	//Cutscene flags
+	// cutscene flags
 	private boolean lockKeyboard;
 	private boolean lockCameraOnPlayer;
 	private boolean bossFightStarted;
 	private boolean bossFightFinished;
 	
-	private Enemy boss;
+	private Enemy golem;
 
 	private ArrayList<Enemy> enemies;
 
@@ -55,21 +57,23 @@ public class Level1 extends GameState{
 		hud = new HUD(player);
 		
 		cutScene = new CutScene(player, tileMap);
-		lockKeyboard = false;
-		lockCameraOnPlayer = true;
 		bossFightStarted = false;
 		bossFightFinished = false;
-		boss = new Golem(tileMap, player);
+		lockKeyboard = false;
+		lockCameraOnPlayer = true;
+		
+		golem = new Golem(tileMap, player);
 		
 		enemies = new ArrayList<>();
 		populateEnemies();
 	}
 	
-	public void spawnBoss(){
-		boss.setPosition(4564, 610);
-		enemies.add(boss);
+	public void spawnGolem(){
+		golem.setPosition(4564, 610);
+		enemies.add(golem);
 	}
 	
+	// adds slimes to the game
 	public void populateEnemies(){
 		Slime s2,s4,s5,s8,s10,s11,s12,s14,s15;
 		s2 = new Slime(tileMap);
@@ -102,36 +106,28 @@ public class Level1 extends GameState{
 	}
 	
 	private void checkForCutScenes(){
+		// start the boss fight
 		if(player.getX() >= 4310 && !bossFightStarted){
 			changeCamera();
 			gsm.stopBackgroundClip();
 			gsm.setBackgroundMusicClip(PlaySound.repeatSound(Sounds.bossFightMusic));
 			bossFightStarted = true;
 			cutScene.startFirstBoss();
-			spawnBoss();
+			spawnGolem();
 		}
 		
-		if(boss.isDead() && !bossFightFinished){
+		// finish boss fight
+		if(golem.isDead() && !bossFightFinished){
 			bossFightFinished = true;
 			lockUnlockKeyboard();
 			cutScene.finishBossFight();
 
 		}
+		
+		// change to winning screen after reaching exit
 		if(player.getX() > 4262 && player.getX() < 4315 && bossFightFinished){
 			gsm.setState(GameStateManager.WIN);
 		}
-	}
-	
-	@Override
-	public void update() {
-		checkForCutScenes();
-		player.update();
-		centerCamera();
-		moveBackground();
-		checkPlayerInteractionWithEnemies();
-		updateAllEnemies();
-		if(bossFightFinished) cutScene.update();
-		checkForGameOver();
 	}
 	
 	public void lockUnlockKeyboard(){
@@ -149,8 +145,15 @@ public class Level1 extends GameState{
 				GamePanel.HEIGHT / 2f - player.getY()
 			);
 		}
+		// center camera on temple during boss fight
 		else{
 			tileMap.setPositionHard(-3800, -64);
+		}
+	}
+	
+	public void drawEnemies(Graphics2D g){
+		for(Enemy enemy : enemies) {
+			enemy.draw(g);
 		}
 	}
 	
@@ -158,7 +161,7 @@ public class Level1 extends GameState{
 		bg.setPosition(tileMap.getX(),tileMap.getY());
 	}
 	
-	// Getting hit by enemies and vice-versa
+	// check player collision and attacks with enemies
 	public void checkPlayerInteractionWithEnemies(){
 		player.checkAttack(enemies);
 	}
@@ -180,18 +183,24 @@ public class Level1 extends GameState{
 	}
 	
 	@Override
+	public void update() {
+		checkForGameOver();
+		checkForCutScenes();
+		centerCamera();
+		moveBackground();
+		updateAllEnemies();
+		player.update();
+		checkPlayerInteractionWithEnemies();
+		if(bossFightFinished) cutScene.update();
+	}
+	
+	@Override
 	public void draw(Graphics2D g) {
 		bg.draw(g);
 		tileMap.draw(g);
 		player.draw(g);
 		drawEnemies(g);
 		hud.draw(g);
-	}
-	
-	public void drawEnemies(Graphics2D g){
-		for(Enemy enemy : enemies) {
-			enemy.draw(g);
-		}
 	}
 
 	public void checkForGameOver(){
@@ -210,7 +219,6 @@ public class Level1 extends GameState{
 			if(k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT) player.setLeft(true);
 			if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(true);
 			if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(true);
-			if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(true);
 			if(k == KeyEvent.VK_E) player.attack();
 			if(k == KeyEvent.VK_SHIFT) player.setRunning(true);
 		}
@@ -222,7 +230,6 @@ public class Level1 extends GameState{
 			if(k == KeyEvent.VK_A || k == KeyEvent.VK_LEFT) player.setLeft(false);
 			if(k == KeyEvent.VK_D || k == KeyEvent.VK_RIGHT) player.setRight(false);
 			if(k == KeyEvent.VK_UP || k == KeyEvent.VK_W || k == KeyEvent.VK_SPACE) player.setJumping(false);
-			if(k == KeyEvent.VK_DOWN || k == KeyEvent.VK_S) player.setDown(false);
 			if(k == KeyEvent.VK_SHIFT) player.setRunning(false);
 		}
 	}

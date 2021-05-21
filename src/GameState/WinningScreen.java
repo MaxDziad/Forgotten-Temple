@@ -1,9 +1,5 @@
 package GameState;
 
-import Entity.PlaySound;
-import Entity.Sounds;
-import GameMain.GamePanel;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -35,8 +31,15 @@ public class WinningScreen extends ChoosableMenu{
         y = 400;
         gap = 80;
     }
+    
     @Override
-    public void update() {}
+    protected void select() {
+        switch(currentChoice) {
+            case 0 -> gsm.restartLevel1();
+            case 1 -> gsm.setState(GameStateManager.MENU);
+            case 2 -> System.exit(0);
+        }
+    }
     
     private void drawYouWinImage(Graphics2D g){
         try {
@@ -47,27 +50,21 @@ public class WinningScreen extends ChoosableMenu{
             e.printStackTrace();
         }
     }
-
+    
+    private void drawBlackTransparentBackground(Graphics2D g){
+        g.setColor(BLACK_TRANSPARENT);
+        g.fillRect(0, 0, WIDTH, HEIGHT);
+        isBlackTransparentDrawn = true;
+    }
+    
+    @Override
+    public void update() {}
+    
     @Override
     public void draw(Graphics2D g) {
-        if(!isBlackTransparentDrawn) {
-            g.setColor(BLACK_TRANSPARENT);
-            g.fillRect(0, 0, WIDTH, HEIGHT);
-            isBlackTransparentDrawn = true;
-        }
+        if(!isBlackTransparentDrawn) drawBlackTransparentBackground(g);
         drawYouWinImage(g);
         drawOptions(g);
     }
-
-    @Override
-    protected void select() {
-        switch(currentChoice) {
-            case 0 -> gsm.restartLevel1();
-            case 1 -> gsm.setState(GameStateManager.MENU);
-            case 2 -> System.exit(0);
-        }
-    }
-
-
 
 }

@@ -11,20 +11,20 @@ import java.io.InputStreamReader;
 
 public class TileMap {
 	
-	// Position
+	// position
 	private double x;
 	private double y;
 	
-	// Bounds
+	// bounds
 	private int xmin;
 	private int ymin;
 	private int xmax;
 	private int ymax;
 	
-	// Smoothly scrolls camera towards the player, without that the camera would have "jumping" effect during scrolling
+	// smoothly scrolls camera towards the player, without that the camera would have "jumping" effect during scrolling
 	private double tween;
 	
-	// Map
+	// map attributes
 	private int[][] map;
 	private final int tileSize;
 	private int numRows;
@@ -32,18 +32,17 @@ public class TileMap {
 	private int width;
 	private int height;
 	
-	// Tileset
+	// tileset
 	private BufferedImage tileset;
 	private int numTilesAcross;
 	private Tile[][] tiles;
 	
-	// Optimized drawing that tiles out of bounds are not rendered
+	// optimized drawing that tiles out of bounds are not rendered
 	private int rowOffset;
 	private int columnOffset;
 	private final int numRowsToDraw;
 	private final int numColumnsToDraw;
 	
-	// Constructor
 	public TileMap(int tileSize){
 		this.tileSize = tileSize;
 		numRowsToDraw = GamePanel.HEIGHT / tileSize + 2;
@@ -51,15 +50,16 @@ public class TileMap {
 		tween = 0.07;
 	}
 	
-	// To load tiles from the Tile image
-	// First row in the Tile image should be full of tiles which lack of impact in the game (just like background, to
-	// make game more beautiful). Second row is full of block tiles, for ex. floor, walls etc. (interacts with player)
+	// load tiles from the Tile image
+	// first row in the tiles image should be full of tiles which don't collide with map objects (just like background,
+	// to make game more beautiful). Second row is full of block tiles, for ex. floor, walls etc.
 	public void loadTiles(String s){
 		try{
 			tileset = ImageIO.read(getClass().getResourceAsStream(s));
 			numTilesAcross = tileset.getWidth() / tileSize;
 			tiles = new Tile[2][numTilesAcross];
 			
+			// load images of tiles to the tiles list
 			BufferedImage subimage;
 			for(int col = 0; col < numTilesAcross; col++){
 				subimage = tileset.getSubimage(col * tileSize, 0, tileSize, tileSize);
@@ -74,15 +74,15 @@ public class TileMap {
 	}
 	
 	
-	// To load current's level map
+	// load current's level map
 	// First line is the number of columns, second line is the number of rows, the rest is the map of current level.
 	public void loadMap(String s){
 		try{
-			//Loading map file
+			// loading map file
 			InputStream in = getClass().getResourceAsStream(s);
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			
-			//Initializing and reading map file
+			// initializing and reading map file
 			numColumns = Integer.parseInt(br.readLine());
 			numRows = Integer.parseInt(br.readLine());
 			map = new int[numRows][numColumns];
@@ -94,6 +94,7 @@ public class TileMap {
 			ymin = GamePanel.HEIGHT - height;
 			ymax = 0;
 			
+			// load map to the map array
 			String delims = "\\s+";
 			for(int row = 0; row < numRows; row++){
 				String line = br.readLine();
@@ -108,7 +109,6 @@ public class TileMap {
 		}
 	}
 	
-	// Getters
 	public double getX() {
 		return x;
 	}
@@ -133,18 +133,19 @@ public class TileMap {
 		tween = d;
 	}
 	
-	// Function for camera to follow the player
+	// function for camera to follow the player
 	public void setPosition(double x, double y){
 		this.x += (x - this.x) * tween;
 		this.y += (y - this.y) * tween;
 		
 		fixBounds();
 		
-		// Lock camera on the player with drawing full map
+		// lock camera on the player with drawing full map
 		columnOffset = (int)-this.x / tileSize;
 		rowOffset = (int)-this.y / tileSize;
 	}
 	
+	// function for camera to lock on given position (like in temple during boss fight)
 	public void setPositionHard(double x, double y){
 		this.x = x;
 		this.y = y;
@@ -153,7 +154,7 @@ public class TileMap {
 		rowOffset = (int)-this.y / tileSize;
 	}
 	
-	// So the camera won't be showing space which is out of map
+	// so the camera won't be showing space which is out of map
 	private void fixBounds(){
 		if(x < xmin) x = xmin;
 		if(y < ymin) y = ymin;
@@ -161,6 +162,7 @@ public class TileMap {
 		if(y > ymax) y = ymax;
 	}
 	
+	// function for cutscene, change tiles when event occures (close the doors during boss fight, making exit)
 	public void setTileOnMap(int row, int col, int tileNumber){
 		map[row][col] = tileNumber;
 	}
@@ -187,5 +189,4 @@ public class TileMap {
 			}
 		}
 	}
-	
 }

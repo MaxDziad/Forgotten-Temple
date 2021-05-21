@@ -19,7 +19,7 @@ public class Loading extends GameState{
 	
 	@Override
 	public void draw(Graphics2D g) {
-		g.setColor(new Color(0,0,0));
+		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		Font font = new Font("Braggadocio", Font.PLAIN, 60);
 		g.setFont(font);

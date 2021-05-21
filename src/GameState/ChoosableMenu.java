@@ -7,11 +7,13 @@ public abstract class ChoosableMenu extends GameState {
 	
 	protected int currentChoice;
 	protected String[] options;
+	
 	protected Color currentChoiceColor;
 	protected Color otherChoiceColor;
+	
 	protected Font font;
 	
-	// For text position
+	// for text positioning
 	protected int x;
 	protected int y;
 	protected int gap;

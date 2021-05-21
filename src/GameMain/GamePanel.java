@@ -7,45 +7,34 @@ import java.awt.event.*;
 import javax.swing.JPanel;
 
 import Entity.Player;
-import GameState.GameState;
 import GameState.GameStateManager;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener{
-	
-	// To save paused progress
-	private int pausedState;
-	private int gameOver;
-
-	
-	// Dimensions
+	// dimensions
 	public static final int WIDTH = 1024;
 	public static final int HEIGHT = 768;
 	public static final int SCALE = 1;
 	
-	// Game thread
+	// game thread
 	private Thread thread;
 	private boolean isPaused;
-	private boolean isGameOver;
 	private static final int FPS = 60;
 	private static final long targetTime = 1000 / FPS;
 	
-	// Image and Graphics
 	private BufferedImage image;
 	private Graphics2D g;
 	
-	// Game state manager (Menu, Level1 etc)
+	// manages current state of the game (Menu, Level1, Paused, GameOver etc.)
 	private GameStateManager gsm;
-
-	private Player player;
-
-	// Constructor
+	private int pausedState;
+	
 	public GamePanel() {
 		setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
 		setFocusable(true);
 		requestFocus();
 	}
 
-	// Makes a JFrame displayable by connecting it to a native screen resource
+	// makes a JFrame displayable by connecting it to a native screen resource
 	public void addNotify() {
 		super.addNotify();
 		if(thread == null) {
@@ -55,16 +44,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 	}
 
-	// Initialize game
+	// initialize game
 	private void initialize() {
 		
 		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		g = (Graphics2D) image.getGraphics();
 		
-		isPaused = false;
-		//isGameOver = false;
 		gsm = new GameStateManager();
-		
+		isPaused = false;
 	}
 	
 	public void run() {
@@ -72,14 +59,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		gameLoop();
 	}
 	
-	public void gameLoop(){
+	private void drawGame(){
+		update();
+		draw();
+		drawToScreen();
+	}
+	
+	private void gameLoop(){
 		while(true) {
 			
 			long start = System.nanoTime();
 			
-			update();
-			draw();
-			drawToScreen();
+			drawGame();
 			
 			long elapsed = System.nanoTime() - start;
 			
@@ -94,18 +85,15 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			}
 		}
 	}
-
-	// Calculate objects
+	
 	private void update() {
 		gsm.update();
 	}
-
-	// Draw objects
+	
 	private void draw() {
 		gsm.draw(g);
 	}
-
-	// Draw it to screen
+	
 	private void drawToScreen() {
 		Graphics g2 = getGraphics();
 		g2.drawImage(image, 0, 0,
@@ -119,8 +107,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		gsm.createPausedState();
 		gsm.setState(GameStateManager.PAUSE);
 	}
-
-	// Key listeners
+	
 	public void keyTyped(KeyEvent key) {}
 	
 	public void keyPressed(KeyEvent key) {

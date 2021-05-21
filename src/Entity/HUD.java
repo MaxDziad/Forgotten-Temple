@@ -14,7 +14,6 @@ public class HUD {
     public HUD(Player p){
         player = p;
         initializeHUDImage();
-
     }
     
     public void initializeHUDImage(){
@@ -26,11 +25,19 @@ public class HUD {
             e.printStackTrace();
         }
     }
-
-    public void draw(Graphics2D g){
-        g.drawImage(image, 0, 20, null);
+    
+    private void drawPlayerHealth(Graphics2D g){
         g.setFont(font);
         g.setColor(Color.BLUE);
         g.drawString(player.getCurrentHealth() +"/" + player.getMaxHealth(),60,50);
+    }
+    
+    private void drawHUDImage(Graphics2D g){
+        g.drawImage(image, 0, 20, null);
+    }
+
+    public void draw(Graphics2D g){
+        drawHUDImage(g);
+        drawPlayerHealth(g);
     }
 }

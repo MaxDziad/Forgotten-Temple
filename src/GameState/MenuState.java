@@ -1,6 +1,6 @@
 package GameState;
 
-import TileMap.Background;
+import Entity.Background;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -45,19 +45,8 @@ public class MenuState extends ChoosableMenu {
 		}
 	}
 	
-	public void update() {
-		bg.update();
-	}
-	
 	public void drawBackground(Graphics2D g){
 		bg.draw(g);
-	}
-	
-	@Override
-	public void draw(Graphics2D g) {
-		drawBackground(g);
-		drawTitleImage(g);
-		drawOptions(g);
 	}
 	
 	@Override
@@ -71,6 +60,16 @@ public class MenuState extends ChoosableMenu {
 		if(currentChoice == 2) {
 			System.exit(0);
 		}
+	}
+	
+	@Override
+	public void update() {}
+	
+	@Override
+	public void draw(Graphics2D g) {
+		drawBackground(g);
+		drawTitleImage(g);
+		drawOptions(g);
 	}
 }
 

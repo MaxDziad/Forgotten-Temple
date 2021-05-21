@@ -1,11 +1,12 @@
-package Entity;
+package Sound;
 
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+// class with static methods for playing sound clips
 public class PlaySound {
-	// Play a given sound on repeat
+	
+	// play a given sound in loop
 	public static Clip repeatSound(Sounds sound) {
 		try {
 			Clip clip = AudioSystem.getClip();

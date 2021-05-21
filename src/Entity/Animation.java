@@ -1,32 +1,40 @@
 package Entity;
 
-
 import java.awt.image.BufferedImage;
-import java.nio.Buffer;
 
 public class Animation {
 	
-	// Animation frames
+	// animation frames
 	private BufferedImage[] frames;
 	private int currentFrame;
 	
-	// Animation timer
+	// animation timer
 	private long startTime;
 	private long delay;
 	
 	private boolean playedOnce;
 	
-	// Constructor
 	public Animation(){
 		playedOnce = false;
 	}
 	
-	// Setters
 	public void setFrames(BufferedImage[] frames){
 		this.frames = frames;
 		currentFrame = 0;
 		startTime = System.nanoTime();
 		playedOnce = false;
+	}
+	
+	public int getCurrentFrame() {
+		return currentFrame;
+	}
+	
+	public BufferedImage getImage(){
+		return frames[currentFrame];
+	}
+	
+	public boolean isPlayedOnce() {
+		return playedOnce;
 	}
 	
 	public void setDelay(long delay){
@@ -47,17 +55,4 @@ public class Animation {
 			playedOnce = true;
 		}
 	}
-	
-	// Getters
-	public int getCurrentFrame() {
-		return currentFrame;
-	}
-	public BufferedImage getImage(){
-		return frames[currentFrame];
-	}
-	
-	public boolean isPlayedOnce() {
-		return playedOnce;
-	}
-	
 }

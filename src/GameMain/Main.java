@@ -7,8 +7,8 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
-		JFrame window = new JFrame("Super Student Bros");
-		//Center game on screen
+		JFrame window = new JFrame("Forgotten Temple");
+		
 		window.setSize(new Dimension(GamePanel.WIDTH, GamePanel.HEIGHT));
 		window.setLocationRelativeTo(null);
 		
