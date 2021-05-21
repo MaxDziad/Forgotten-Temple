@@ -4,7 +4,9 @@ import Entity.PlaySound;
 import Entity.Sounds;
 import GameMain.GamePanel;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 import static GameMain.GamePanel.HEIGHT;
 import static GameMain.GamePanel.WIDTH;
@@ -20,8 +22,8 @@ public class WinningScreen extends ChoosableMenu{
 
     @Override
     public void initialize() {
-        currentChoiceColor = new Color(255,50,50);
-        otherChoiceColor = Color.YELLOW;
+        currentChoiceColor = new Color(136, 236, 91);
+        otherChoiceColor = new Color(32, 118, 28, 255);
         font = new Font("Arial", Font.PLAIN, 60);
         options = new String[] {
                 "Play again",
@@ -29,17 +31,21 @@ public class WinningScreen extends ChoosableMenu{
                 "Quit"
         };
         isBlackTransparentDrawn = false;
-        x = 350;
-        y = 300;
+        x = 320;
+        y = 400;
         gap = 80;
     }
     @Override
     public void update() {}
-
-    private void drawWinningScreen(Graphics2D g){
-        g.setFont(new Font("Arial",Font.BOLD,80));
-        g.setColor(Color.BLUE);
-        g.drawString("YOU WON", 300,120);
+    
+    private void drawYouWinImage(Graphics2D g){
+        try {
+            BufferedImage image = ImageIO.read(getClass().getResourceAsStream("/Images/youWin.png"));
+            g.drawImage(image,(WIDTH-image.getWidth()) / 2,100,null);
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -49,8 +55,8 @@ public class WinningScreen extends ChoosableMenu{
             g.fillRect(0, 0, WIDTH, HEIGHT);
             isBlackTransparentDrawn = true;
         }
+        drawYouWinImage(g);
         drawOptions(g);
-        drawWinningScreen(g);
     }
 
     @Override

@@ -180,9 +180,9 @@ public class Golem extends Enemy{
 			if(left) facingRight = false;
 		}
 		
-		changeCBoxShape();
 		
 		animation.update();
+		changeCBoxShape();
 		
 	}
 	

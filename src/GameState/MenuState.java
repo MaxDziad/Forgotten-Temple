@@ -1,14 +1,16 @@
 package GameState;
 
 import TileMap.Background;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static GameMain.GamePanel.WIDTH;
 
 public class MenuState extends ChoosableMenu {
 	
 	private Background bg;
-	
-	private Color titleColor;
-	private Font titleFont;
 	
 	public MenuState(GameStateManager gsm) {
 		super(gsm);
@@ -18,18 +20,25 @@ public class MenuState extends ChoosableMenu {
 		try {
 			bg = new Background("/Background/menu.png", 1);
 			
-			titleColor = new Color(255, 255, 0);
-			titleFont = new Font("Century Gothic", Font.PLAIN, 60);
-			
-			currentChoiceColor = new Color(60,100,255);
-			otherChoiceColor = Color.BLACK;
-			font = new Font("Arial", Font.PLAIN, 40);
+			currentChoiceColor = new Color(255,50,50);
+			otherChoiceColor = Color.YELLOW;
+			font = new Font("Arial", Font.PLAIN, 50);
 			
 			options = new String[] {"New Game", "Controls", "Quit"};
 			
 			x = 160;
 			y = 400;
 			gap = 60;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void drawTitleImage(Graphics2D g){
+		try {
+			BufferedImage image = ImageIO.read(getClass().getResourceAsStream("/Images/title.png"));
+			g.drawImage(image,(WIDTH-image.getWidth()) / 2,30,null);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -44,16 +53,10 @@ public class MenuState extends ChoosableMenu {
 		bg.draw(g);
 	}
 	
-	public void drawTitle(Graphics2D g){
-		g.setColor(titleColor);
-		g.setFont(titleFont);
-		g.drawString("Super Student Bros", 20, 100);
-	}
-	
 	@Override
 	public void draw(Graphics2D g) {
 		drawBackground(g);
-		drawTitle(g);
+		drawTitleImage(g);
 		drawOptions(g);
 	}
 	

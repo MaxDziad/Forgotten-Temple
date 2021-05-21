@@ -16,7 +16,7 @@ public class GameStateManager {
 	public static final int LOADING = 1;
 	public static final int LEVEL1 = 2;
 	public static final int CONTROLS = 3;
-	public static final int GAMEOVER = 4;
+	public static final int GAME_OVER = 4;
 	public static final int WIN = 5;
 	public static final int PAUSE = 6;
 
@@ -47,6 +47,11 @@ public class GameStateManager {
 		changeBackgroundMusicClip();
 	}
 	
+	public void fromPauseToMenu(){
+		currentState = MENU;
+		gameStates.get(currentState).initialize();
+	}
+	
 	public void stopBackgroundClip(){
 		backgroundMusicClip.stop();
 	}
@@ -56,8 +61,9 @@ public class GameStateManager {
 		switch(currentState){
 			case MENU -> backgroundMusicClip = PlaySound.repeatSound(Sounds.menu);
 			case LEVEL1 -> backgroundMusicClip = PlaySound.repeatSound(Sounds.level1);
-			case GAMEOVER -> backgroundMusicClip = PlaySound.repeatSound(Sounds.gameover);
+			case GAME_OVER -> backgroundMusicClip = PlaySound.repeatSound(Sounds.gameover);
 			case WIN -> PlaySound.playSound(Sounds.win);
+			case CONTROLS -> backgroundMusicClip.start();
 		}
 	}
 	

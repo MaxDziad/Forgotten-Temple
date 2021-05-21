@@ -8,7 +8,6 @@ import GameMain.GamePanel;
 import TileMap.*;
 
 
-import javax.sound.sampled.Clip;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
@@ -48,9 +47,9 @@ public class Level1 extends GameState{
 		bg = new Background("/Background/level1.png",0.1);		//load Background
 
 		player = new Player(tileMap);
+		
 		player.setPosition(150,700); //Start
 		//player.setPosition(1800,100); //Middle
-
 		//player.setPosition(4200,600);  //Boss
 		
 		hud = new HUD(player);
@@ -62,7 +61,7 @@ public class Level1 extends GameState{
 		bossFightFinished = false;
 		boss = new Golem(tileMap, player);
 		
-		enemies = new ArrayList<Enemy>();
+		enemies = new ArrayList<>();
 		populateEnemies();
 	}
 	
@@ -197,11 +196,11 @@ public class Level1 extends GameState{
 
 	public void checkForGameOver(){
 		if(player.getCurrentHealth() == 0){
-			gsm.setState(GameStateManager.GAMEOVER);
+			gsm.setState(GameStateManager.GAME_OVER);
 		}
 		if(player.getY() >= 800){
 			player.setCurrentHealth(0);
-			gsm.setState(GameStateManager.GAMEOVER);
+			gsm.setState(GameStateManager.GAME_OVER);
 		}
 	}
 	

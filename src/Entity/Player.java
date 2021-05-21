@@ -79,12 +79,10 @@ public class Player extends MapObject{
 	public int getCurrentHealth() {
 		return currentHealth;
 	}
-
 	public int getMaxHealth() {
 		return maxHealth;
 	}
-
-
+	
 	// FOR THE HORDE!
 	public void attack(){
 		isAttacking = true;

@@ -98,7 +98,7 @@ public class Controls extends GameState  {
     @Override
     public void keyPressed(int k) {
         if(k == KeyEvent.VK_ESCAPE){
-            gsm.setState(GameStateManager.MENU);
+            gsm.fromPauseToMenu();
         }
     }
 
