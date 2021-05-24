@@ -1,0 +1,6 @@
+https://stackoverflow.com/*
+docs.oracle.com/javase/7/docs/api/java/awt/*
+https://javastart.pl/baza-wiedzy/grafika_awt_swing/*
+
+https://www.youtube.com/watch?v=qJpdRFvSj1A&ab_channel=ForeignGuyMike
+https://zetcode.com/javagames/
