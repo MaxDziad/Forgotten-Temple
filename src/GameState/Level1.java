@@ -50,9 +50,9 @@ public class Level1 extends GameState{
 
 		player = new Player(tileMap);
 		
-		player.setPosition(150,700); //Start
-		//player.setPosition(1800,100); //Middle
-		//player.setPosition(4200,600);  //Boss
+		player.setPosition(150,700); // Start
+		//player.setPosition(1800,100); // Middle
+		//player.setPosition(4200,600);  // Boss
 		
 		hud = new HUD(player);
 		
@@ -207,8 +207,7 @@ public class Level1 extends GameState{
 		if(player.getCurrentHealth() == 0){
 			gsm.setState(GameStateManager.GAME_OVER);
 		}
-		if(player.getY() >= 800){
-			player.setCurrentHealth(0);
+		if(player.getY() >= 795){
 			gsm.setState(GameStateManager.GAME_OVER);
 		}
 	}
