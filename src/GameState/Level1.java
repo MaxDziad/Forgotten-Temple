@@ -207,8 +207,7 @@ public class Level1 extends GameState{
 		if(player.getCurrentHealth() == 0){
 			gsm.setState(GameStateManager.GAME_OVER);
 		}
-		if(player.getY() >= 800){
-			player.setCurrentHealth(0);
+		if(player.getY() >= 795){
 			gsm.setState(GameStateManager.GAME_OVER);
 		}
 	}
