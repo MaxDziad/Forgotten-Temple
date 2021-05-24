@@ -50,9 +50,9 @@ public class Level1 extends GameState{
 
 		player = new Player(tileMap);
 		
-		player.setPosition(150,700); //Start
-		//player.setPosition(1800,100); //Middle
-		//player.setPosition(4200,600);  //Boss
+		player.setPosition(150,700); // Start
+		//player.setPosition(1800,100); // Middle
+		//player.setPosition(4200,600);  // Boss
 		
 		hud = new HUD(player);
 		
